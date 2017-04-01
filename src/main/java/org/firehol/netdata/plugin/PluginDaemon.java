@@ -18,16 +18,52 @@
 
 package org.firehol.netdata.plugin;
 
+import java.util.logging.Logger;
+
+import org.firehol.netdata.utils.AlignToTimeIntervalService;
+import org.firehol.netdata.utils.UnitConversion;
+
 /**
  * Netdata Java Plugin Daemon.
  * 
  * Holds the main Function of the daemon.
  *
  */
-public class PluginDaemon 
+public class PluginDaemon
 {
+	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+	
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        log.fine("Parse command line");
+        int updateEverySecond = Integer.valueOf(args[0]);
+        long updateEveryNSec = updateEverySecond * UnitConversion.NANO_PER_PLAIN;
+
+        PluginHolder pluginHolder = new PluginHolder();
+        // TODO: Add Plugins.
+
+        
+        pluginHolder.readConfiguration();
+        
+        pluginHolder.initializeCharts();
+
+        if(pluginHolder.getAllPluginSize() < 1) {
+        	log.severe("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
+        	Printer.disable();
+        	System.exit(1);
+        }
+        
+        AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
+        while(true) {
+        	timeService.alignToNextInterval();
+        	
+        	pluginHolder.collect();
+        }
     }
+
+	private static boolean verifyWeCanCollectValues() {
+		log.warning("TODO: Implement verifyWeCanCollectValues()");
+		return true;
+	}
+
 }

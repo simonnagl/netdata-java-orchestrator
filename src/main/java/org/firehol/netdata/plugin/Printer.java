@@ -3,13 +3,13 @@ package org.firehol.netdata.plugin;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 
-public class Printer {
-
-	private void print(String command) {
+public abstract class Printer {
+	
+	private static void print(String command) {
 		System.out.println(command);
 	}
 
-	public void initializeChart(Chart chart) {
+	public static void initializeChart(Chart chart) {
 		// --------------------------------------------------------------------
 		// Build the first line.
 		// --------------------------------------------------------------------
@@ -85,7 +85,7 @@ public class Printer {
 	}
 	
 
-	public void collect(Chart chart) {
+	public static void collect(Chart chart) {
 		// TODO Add microseconds to the output.
 		print("BEGIN " + chart.getType() + "." + chart.getId());
 
@@ -100,8 +100,7 @@ public class Printer {
 	 * Tell the caller to disable the plugin. This will prevent it from
 	 * restarting the plugin.
 	 */
-	public void disable() {
+	public static void disable() {
 		print("DISABLE");
-		// System.exit(1);
 	}
 }
