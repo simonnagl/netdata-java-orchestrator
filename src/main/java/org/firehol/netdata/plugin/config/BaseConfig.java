@@ -18,27 +18,28 @@ import lombok.Setter;
 
 /**
  * Handle Configuration properties.
- * 
+ *
  * The configuration file can contain three elements. 1. Lines starting with '#'
  * are treated as comments and ignored. 2. Lines starting with '[' and ending
  * with ']' are section headers. 3. Lines containing one '=' are treated as key
  * values pairs.
- * 
+ *
  * The configuration file must start with one section.
- * 
+ *
  * @author Simon Nagl
  */
+// TODO: Proper logging.
 @NoArgsConstructor
-public class Configuration {
+public class BaseConfig implements Config {
 
-	private Logger log = Logger.getLogger("org.firehol.netdata.configuration");
+	private final Logger log = Logger.getLogger("org.firehol.netdata.configuration");
 
 	@Getter
 	private class Section {
-		private String name;
-		private SortedMap<String, Option> allOption = new TreeMap<>();
+		private final String name;
+		private final SortedMap<String, Option> allOption = new TreeMap<>();
 
-		public Section(String name) {
+		public Section(final String name) {
 			this.name = name;
 		}
 	}
@@ -46,57 +47,57 @@ public class Configuration {
 	@Getter
 	@AllArgsConstructor
 	private class Option {
-		private String key;
+		private final String key;
 		@Setter
 		private String value;
 		@Setter
 		private boolean fromFile;
 	}
 
-	private SortedMap<String, Section> allSection = new TreeMap<>();
-	
-	public Configuration(Path path) throws ParsingException {
+	private final SortedMap<String, Section> allSection = new TreeMap<>();
+
+	public BaseConfig(final Path path) throws ParsingException, IOException {
 		read(path);
 	}
 
-	public void read(Path path) throws ParsingException {
-		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			String line = null;
-			String currentSection = null;
+	@Override
+	public void read(final Path path) throws ParsingException, IOException {
+		BufferedReader reader = Files.newBufferedReader(path);
+		String line = null;
+		String currentSection = null;
 
-			while ((line = reader.readLine()) != null) {
-				String rawLine = line;
-				line = line.trim();
-				
-				// Skip empty lines
-				if(line.isEmpty()) {
-					continue;
-				}
-				
-				// Skip comments
-				if (line.charAt(0) == '#') {
-					continue;
-				}
+		while ((line = reader.readLine()) != null) {
+			String rawLine = line;
+			line = line.trim();
 
-				// Parse section header
-				if (line.charAt(0) == '[') {
-					currentSection = line.substring(1, line.length() - 1);
-					continue;
-				}
-
-				// Parse configuration option
-				int equalSignIndex = line.indexOf('=');
-				if (equalSignIndex == 0) {
-					throw new ParsingException("Could not parse line '" + rawLine + "'");
-				}
-				set(currentSection, line.substring(0, equalSignIndex).trim(), line.substring(equalSignIndex + 1).trim(), true);
+			// Skip empty lines
+			if (line.isEmpty()) {
+				continue;
 			}
-		} catch (IOException x) {
-			System.err.println(x);
+
+			// Skip comments
+			if (line.charAt(0) == '#') {
+				continue;
+			}
+
+			// Parse section header
+			if (line.charAt(0) == '[') {
+				currentSection = line.substring(1, line.length() - 1);
+				continue;
+			}
+
+			// Parse configuration option
+			int equalSignIndex = line.indexOf('=');
+			if (equalSignIndex == 0) {
+				throw new ParsingException("Could not parse line '" + rawLine + "'");
+			}
+			set(currentSection, line.substring(0, equalSignIndex).trim(), line.substring(equalSignIndex + 1).trim(),
+					true);
 		}
 	}
 
-	public void write(Path path) {
+	@Override
+	public void write(final Path path) {
 		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 			for (Section section : allSection.values()) {
 				// Write section name.
@@ -125,31 +126,53 @@ public class Configuration {
 		}
 	}
 
-	public String get(String section, String option, String default_value) {
-		// Find Section
+	public String get(final String section, final String option) {
+		// Find section
 		Section thisSection = allSection.get(section);
 		if (thisSection == null) {
-			set(section, option, default_value);
-			return default_value;
+			return null;
 		}
 		// Find option
 		Option thisOption = thisSection.getAllOption().get(option);
 		if (thisOption == null) {
-			set(section, option, default_value);
-			return default_value;
+			return null;
 		}
+		// Find value
 		return thisOption.getValue();
 	}
 
-	public long getNumber(String section, String option, long default_value) {
+	@Override
+	public String get(final String section, final String option, final String default_value) {
+		String value = this.get(section, option);
+
+		if (value == null) {
+			set(section, option, default_value);
+			return default_value;
+		}
+
+		return value;
+	}
+
+	public long getNumber(final String section, final String option) {
+		return Long.valueOf(get(section, option));
+	}
+
+	@Override
+	public long getNumber(final String section, final String option, final long default_value) {
 		return Long.valueOf(get(section, option, String.valueOf(default_value)));
 	}
 
-	public boolean getBoolean(String section, String option, boolean default_value) {
+	public boolean getBoolean(final String section, final String option) {
+		return Boolean.valueOf(get(section, option));
+	}
+
+	@Override
+	public boolean getBoolean(final String section, final String option, final boolean default_value) {
 		return Boolean.valueOf(get(section, option, String.valueOf(default_value)));
 	}
 
-	public boolean isPresent(String section, String option) {
+	@Override
+	public boolean isPresent(final String section, final String option) {
 		Section thisSecion = allSection.get(section);
 		if (section == null) {
 			return false;
@@ -160,7 +183,7 @@ public class Configuration {
 		return true;
 	}
 
-	void set(String section, String option, String value, boolean fromFile) {
+	private void set(final String section, final String option, final String value, final boolean fromFile) {
 		// Find or create section
 		Section thisSection = allSection.get(section);
 		if (thisSection == null) {
@@ -180,15 +203,18 @@ public class Configuration {
 		}
 	}
 
-	public void set(String section, String option, String value) {
+	@Override
+	public void set(final String section, final String option, final String value) {
 		set(section, option, value, false);
 	}
 
-	public void setNumber(String section, String option, int value) {
+	@Override
+	public void setNumber(final String section, final String option, final int value) {
 		set(section, option, "" + value);
 	}
 
-	public void setBoolean(String section, String option, boolean value) {
+	@Override
+	public void setBoolean(final String section, final String option, final boolean value) {
 		set(section, option, "" + value);
 	}
 

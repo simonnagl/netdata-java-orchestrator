@@ -1,5 +1,6 @@
 package org.firehol.netdata.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Dimension {
 	/**
 	 * Identifier of this dimension (it is a text value, not numeric), this will
@@ -32,7 +34,7 @@ public class Dimension {
 	 * will not be presented in the chart.
 	 */
 	boolean hidden;
-	
+
 	/**
 	 * Current collected value
 	 */

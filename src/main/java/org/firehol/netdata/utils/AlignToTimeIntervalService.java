@@ -2,8 +2,6 @@ package org.firehol.netdata.utils;
 
 import java.util.logging.Logger;
 
-import org.firehol.netdata.plugin.ClockService;
-
 /**
  * Service to align execution of a command to an specified time interval.
  * 

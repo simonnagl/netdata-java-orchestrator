@@ -18,52 +18,65 @@
 
 package org.firehol.netdata.plugin;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
+import org.firehol.netdata.plugin.config.BaseConfig;
+import org.firehol.netdata.plugin.jmx.JmxPlugin;
 import org.firehol.netdata.utils.AlignToTimeIntervalService;
 import org.firehol.netdata.utils.UnitConversion;
 
 /**
  * Netdata Java Plugin Daemon.
- * 
+ *
  * Holds the main Function of the daemon.
  *
  */
-public class PluginDaemon
-{
+public class PluginDaemon {
 	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
-	
-    public static void main( String[] args )
-    {
-        log.fine("Parse command line");
-        int updateEverySecond = Integer.valueOf(args[0]);
-        long updateEveryNSec = updateEverySecond * UnitConversion.NANO_PER_PLAIN;
 
-        PluginHolder pluginHolder = new PluginHolder();
-        // TODO: Add Plugins.
+	public static void main(final String[] args) {
+		log.fine("Get options from environment");
+		Long updateEverySec = Long.valueOf(System.getenv("NETDATA_UPDATE_EVERY"));
+		Path configDir = Paths.get(System.getenv("NETDATA_CONFIG_DIR"));
 
-        
-        pluginHolder.readConfiguration();
-        
-        pluginHolder.initializeCharts();
+		PluginHolder pluginHolder = PluginHolder.getInstance();
 
-        if(pluginHolder.getAllPluginSize() < 1) {
-        	log.severe("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
-        	Printer.disable();
-        	System.exit(1);
-        }
-        
-        AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
-        while(true) {
-        	timeService.alignToNextInterval();
-        	
-        	pluginHolder.collect();
-        }
-    }
+		// Here is the place all available plugins get added.
+		// If they are disabled by configuration or cannot collect data
+		// PluginHolder will remove them later.
+		// TODO: Add Plugins.
+		pluginHolder.add(new JmxPlugin());
 
-	private static boolean verifyWeCanCollectValues() {
-		log.warning("TODO: Implement verifyWeCanCollectValues()");
-		return true;
+		BaseConfig globalConfig = pluginHolder.readConfiguration(configDir);
+
+		pluginHolder.initializeCharts();
+
+		if (pluginHolder.getAllPluginSize() < 1) {
+			log.severe("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
+			Printer.disable();
+			System.exit(1);
+		}
+
+		// Check if configuration tells us to update less often the caller tells
+		// us to.
+		long configuredUpdateEverySec = Long
+				.valueOf(globalConfig.get("global", "update every", updateEverySec.toString()));
+		if (configuredUpdateEverySec < updateEverySec) {
+			log.warning("Invalid option in sectino global detected. 'update every' is less than " + updateEverySec
+					+ "which is the minimal requested value.");
+		} else {
+			updateEverySec = configuredUpdateEverySec;
+		}
+
+		// Start the main loop
+		long updateEveryNSec = updateEverySec * UnitConversion.NANO_PER_PLAIN;
+		AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
+		while (true) {
+			timeService.alignToNextInterval();
+
+			pluginHolder.collectValues();
+		}
 	}
-
 }

@@ -1,32 +1,80 @@
 package org.firehol.netdata.plugin;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
-public class PluginHolder {
-	private Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+import org.firehol.netdata.plugin.config.BaseConfig;
+import org.firehol.netdata.plugin.config.exception.ParsingException;
 
-	private Collection<Plugin> allPlugin = new LinkedList<Plugin>();
+/**
+ * This is the class holding a Collection of Java Plugins.
+ *
+ * It maintains their configuration as well as
+ *
+ * @author Simon Nagl
+ */
+public final class PluginHolder {
+	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
-	public void add(Plugin plugin) {
+	private final Collection<AbstractPlugin> allPlugin = new LinkedList<>();
+
+	private static final PluginHolder INSTANCE = new PluginHolder();
+
+	/**
+	 * Do not let anyone instantiate this class.
+	 */
+	private PluginHolder() {
+	}
+
+	public static PluginHolder getInstance() {
+		return INSTANCE;
+	}
+
+	/**
+	 * Add a Plugin which should be handeled by this classe.
+	 *
+	 * @param plugin
+	 *            to add.
+	 */
+	public void add(final AbstractPlugin plugin) {
 		allPlugin.add(plugin);
 	}
 
-	public void readConfiguration() {
-		allPlugin.parallelStream().peek(plugin -> log.info("Read configuration for Java Plugin " + plugin.getName()))
-				.forEach(Plugin::readConfiguration);
+	public BaseConfig readConfiguration(final Path configDir) {
+		log.info("Read global java plugin configuration");
+		Path globalConfigPath = configDir.resolve("java.d.conf");
+		BaseConfig globalConfig;
+		try {
+			globalConfig = new BaseConfig(globalConfigPath);
+		} catch (ParsingException | IOException e) {
+			log.warning("Could not read config file'" + globalConfigPath.toAbsolutePath().toString() + "'. Reason: "
+					+ e.getMessage());
+			globalConfig = new BaseConfig();
+		}
+
+		// Read Plugin specific configuration.
+		Path javaPluginConfigPath = configDir.resolve("java.d");
+		for (AbstractPlugin plugin : allPlugin) {
+			log.info("Read configuration for Java Plugin " + plugin.getName());
+			plugin.readConfig(javaPluginConfigPath, globalConfig);
+		}
+
+		return globalConfig;
 	}
 
 	public void initializeCharts() {
-		log.warning("Initialize Charts");
+		allPlugin.parallelStream().map(AbstractPlugin::initialize).flatMap(Collection::stream)
+				.forEach(Printer::initializeChart);
 	}
-	
+
 	public int getAllPluginSize() {
 		return allPlugin.size();
 	}
 
-	public void collect() {
-		allPlugin.parallelStream().map(Plugin::collectValues).flatMap(Collection::stream).forEach(Printer::collect);
+	public void collectValues() {
+		allPlugin.parallelStream().map(AbstractPlugin::collectValues).flatMap(Collection::stream).forEach(Printer::collect);
 	}
 }

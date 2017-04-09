@@ -14,16 +14,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class ConfigurationTest {
+public class BaseConfigTest {
 
-	Configuration config;
+	BaseConfig config;
 	
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
 	@Before
 	public void init() {
-		config = new Configuration();
+		config = new BaseConfig();
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class ConfigurationTest {
 		String lines = "[section]\noption = value\n option2 = value2\n#Comment\n\n[section2]\noption = value\n\n";
 		Files.write(file, lines.getBytes());
 		
-		Configuration readConfig = new Configuration(file);
+		BaseConfig readConfig = new BaseConfig(file);
 		
 		assertEquals("section.option", "value", readConfig.get("section", "option", "false"));
 		assertEquals("section.option2", "value2", readConfig.get("section", "option2", "false"));

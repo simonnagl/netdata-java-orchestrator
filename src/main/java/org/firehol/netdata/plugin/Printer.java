@@ -3,13 +3,19 @@ package org.firehol.netdata.plugin;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 
-public abstract class Printer {
-	
-	private static void print(String command) {
+public final class Printer {
+
+	/**
+	 * Do not let anyone instantiate this class.
+	 */
+	private Printer() {
+	}
+
+	private static void print(final String command) {
 		System.out.println(command);
 	}
 
-	public static void initializeChart(Chart chart) {
+	public static void initializeChart(final Chart chart) {
 		// --------------------------------------------------------------------
 		// Build the first line.
 		// --------------------------------------------------------------------
@@ -46,22 +52,22 @@ public abstract class Printer {
 		// Append priority
 		sb.append(chart.getPriority());
 		// Append update_every
-		if(chart.hasUpdateEvery()) {			
+		if (chart.hasUpdateEvery()) {
 			sb.append(' ');
 			sb.append(chart.getUpdateEvery());
 		}
-		
+
 		// Append dimension
-		for(Dimension dim : chart.getAllDimension()) {
+		for (Dimension dim : chart.getAllDimension()) {
 			// Newline
-			sb.append(System.lineSeparator() );
+			sb.append(System.lineSeparator());
 			// Start new dimension
 			sb.append("DIMENSION ");
 			// Append ID
 			sb.append(dim.getId());
 			sb.append(' ');
 			// Append name
-			if(dim.hasName()) {
+			if (dim.hasName()) {
 				sb.append(dim.getName());
 			} else {
 				sb.append(dim.getId());
@@ -76,16 +82,15 @@ public abstract class Printer {
 			// Append divisor
 			sb.append(dim.getDivisor());
 			// Append hidden
-			if(dim.isHidden()) {
+			if (dim.isHidden()) {
 				sb.append(" hidden");
 			}
 		}
-		
+
 		print(sb.toString());
 	}
-	
 
-	public static void collect(Chart chart) {
+	public static void collect(final Chart chart) {
 		// TODO Add microseconds to the output.
 		print("BEGIN " + chart.getType() + "." + chart.getId());
 

@@ -1,7 +1,9 @@
 package org.firehol.netdata.entity;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,13 +12,29 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Chart {
+	public Chart(final String type, final String id, final String name, final String title, final String units,
+			final String family, final String context, final ChartType chartType, final int priority,
+			final int updateEvery) {
+		super();
+		this.type = type;
+		this.id = id;
+		this.name = name;
+		this.title = title;
+		this.units = units;
+		this.family = family;
+		this.context = context;
+		this.chartType = chartType;
+		this.priority = priority;
+		this.updateEvery = updateEvery;
+	}
+
 	/**
 	 * Controls the menu the charts will appear in.
 	 */
 	private String type;
 	/**
 	 * type.id
-	 * 
+	 *
 	 * uniquely identifies the chart, this is what will be needed to add values
 	 * to the chart
 	 */
@@ -40,7 +58,7 @@ public class Chart {
 	/**
 	 * is used to group charts together (for example all eth0 charts should say:
 	 * eth0), if empty or missing, the id part of type.id will be used
-	 * 
+	 *
 	 * this controls the sub-menu on the dashboard
 	 */
 	private String family;
@@ -48,7 +66,7 @@ public class Chart {
 	 * The context is giving the template of the chart. For example, if multiple
 	 * charts present the same information for a different family, they should
 	 * have the same context.
-	 * 
+	 *
 	 * This is used for looking up rendering information for the chart (colors,
 	 * sizes, informational texts) and also apply alarms to it.
 	 */
@@ -60,12 +78,13 @@ public class Chart {
 	 */
 	private int priority = 1000;
 	/**
-	 * Overwrite the update frequency in seconds set by the server. If -1 the user
-	 * configured value will be used.
+	 * Overwrite the update frequency in seconds set by the server. If -1 the
+	 * user configured value will be used.
 	 */
 	private int updateEvery = -1;
 
-	private Collection<Dimension> allDimension;
+	@Setter(AccessLevel.NONE)
+	private final List<Dimension> allDimension = new ArrayList<>();
 
 	public boolean hasName() {
 		return getName() != null;

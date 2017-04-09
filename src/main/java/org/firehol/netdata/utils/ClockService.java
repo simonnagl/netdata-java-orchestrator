@@ -1,4 +1,4 @@
-package org.firehol.netdata.plugin;
+package org.firehol.netdata.utils;
 
 /**
  * Proxy to access differen system clocs.
