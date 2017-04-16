@@ -183,7 +183,7 @@ public class BaseConfig implements Config {
 		return true;
 	}
 
-	private void set(final String section, final String option, final String value, final boolean fromFile) {
+	protected void set(final String section, final String option, final String value, final boolean fromFile) {
 		// Find or create section
 		Section thisSection = allSection.get(section);
 		if (thisSection == null) {
