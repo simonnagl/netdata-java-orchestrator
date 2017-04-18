@@ -15,7 +15,7 @@ import org.firehol.netdata.plugin.config.exception.ParsingException;
 import lombok.Getter;
 
 @Getter
-public abstract class AbstractPlugin {
+public abstract class AbstractPlugin implements Collector {
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
 	private final String name;

@@ -1,18 +1,22 @@
 package org.firehol.netdata.plugin.jmx;
 
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.ChartType;
-import org.firehol.netdata.entity.Dimension;
-import org.firehol.netdata.entity.DimensionAlgorithm;
+import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.plugin.AbstractPlugin;
 
 public class JmxPlugin extends AbstractPlugin {
+	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
 
-	private final List<Chart> allChart = new LinkedList<>();
+	private final List<MBeanServerCollector> allMBeanCollector = new ArrayList<>();
 
 	@Override
 	public String setName() {
@@ -21,22 +25,39 @@ public class JmxPlugin extends AbstractPlugin {
 
 	@Override
 	public Collection<Chart> initialize() {
+
+		// Step 1
+		// Connect to MBeanServer
+
+		// Read configuration
+
 		getConfig().get("global", "server", "");
+		MBeanServerCollector collector = new MBeanServerCollector(ManagementFactory.getPlatformMBeanServer());
+		allMBeanCollector.add(collector);
 
-		// Connect
+		// Step 2
+		// Initialize MBeanServer
 
-		Chart test = new Chart("test", "example", null, "Java Test chart", "num", "test", "test", ChartType.LINE, 1,
-				Integer.valueOf((getConfig().get("global", "update every", "1"))));
-		Dimension dim = new Dimension("one", "one", DimensionAlgorithm.ABSOLUTE, 1, 1, false, 1);
-		test.getAllDimension().add(dim);
-		allChart.add(test);
+		List<Chart> allChart = new LinkedList<>();
+		Iterator<MBeanServerCollector> mBeanCollectorIterator = allMBeanCollector.iterator();
+
+		while (mBeanCollectorIterator.hasNext()) {
+			MBeanServerCollector mBeanCollector = mBeanCollectorIterator.next();
+			try {
+				allChart.addAll(mBeanCollector.initialize());
+			} catch (InitializationException e) {
+				log.warning("Could not initialize JMX plugin " + mBeanCollector.getmBeanServer().toString());
+				mBeanCollectorIterator.remove();
+			}
+		}
 
 		return allChart;
 	}
 
 	@Override
 	public Collection<Chart> collectValues() {
-		return allChart;
+		return allMBeanCollector.stream().map(MBeanServerCollector::collectValues).flatMap(Collection::stream)
+				.collect(Collectors.toList());
 	}
 
 }
