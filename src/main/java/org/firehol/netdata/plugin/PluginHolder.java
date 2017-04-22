@@ -10,9 +10,7 @@ import org.firehol.netdata.plugin.config.BaseConfig;
 import org.firehol.netdata.plugin.config.exception.ParsingException;
 
 /**
- * This is the class holding a Collection of Java Plugins.
- *
- * It maintains their configuration as well as
+ * This singleton manages a collection of plugins.
  *
  * @author Simon Nagl
  */
@@ -44,7 +42,7 @@ public final class PluginHolder {
 	}
 
 	public BaseConfig readConfiguration(final Path configDir) {
-		log.info("Read global java plugin configuration");
+		log.info("Read configuration");
 		Path globalConfigPath = configDir.resolve("java.d.conf");
 		BaseConfig globalConfig;
 		try {
