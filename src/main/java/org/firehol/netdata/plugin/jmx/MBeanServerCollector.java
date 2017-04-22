@@ -22,6 +22,7 @@ import org.firehol.netdata.entity.ChartType;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.exception.InitializationException;
+import org.firehol.netdata.exception.NotImplementedException;
 import org.firehol.netdata.plugin.Collector;
 
 public class MBeanServerCollector implements Collector {
@@ -85,8 +86,6 @@ public class MBeanServerCollector implements Collector {
 			MBeanCollector collector = new MBeanCollector(mBeanName);
 			
 			allChart.addAll(collector.initialize());
-			
-			allChart.add(chart);
 			MBeanAttributeInfo[] mBeanInfo;
 			try {
 				 mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
@@ -105,7 +104,6 @@ public class MBeanServerCollector implements Collector {
 						long value = (long) mBeanServer.getAttribute(mBeanName, info.getName());
 						
 						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1, false, value);
-						chart.getAllDimension().add(dim);
 						
 					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
 							| ReflectionException | IOException e) {
@@ -123,13 +121,7 @@ public class MBeanServerCollector implements Collector {
 
 	@Override
 	public Collection<Chart> collectValues() {
-		for(Chart chart : allChart) {
-			for(Dimension dim : chart.getAllDimension()) {
-				
-			}
-		}
-		
-		return allChart;
+		throw new NotImplementedException("Collect the values of all MBeans in this MBeanServer");
 	}
 
 }

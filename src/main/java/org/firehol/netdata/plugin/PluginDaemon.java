@@ -46,7 +46,6 @@ public class PluginDaemon {
 		// Here is the place all available plugins get added.
 		// If they are disabled by configuration or cannot collect data
 		// PluginHolder will remove them later.
-		// TODO: Add Plugins.
 		pluginHolder.add(new JmxPlugin());
 
 		BaseConfig globalConfig = pluginHolder.readConfiguration(configDir);
