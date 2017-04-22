@@ -1,28 +1,61 @@
 package org.firehol.netdata.plugin.jmx;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
+import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import org.firehol.netdata.entity.Chart;
+import org.firehol.netdata.entity.ChartType;
+import org.firehol.netdata.entity.Dimension;
+import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.plugin.Collector;
 
 public class MBeanServerCollector implements Collector {
+	private class MBeanCollector implements Collector {
+
+		private ObjectName mBeanName;
+		
+		public MBeanCollector(ObjectName mBeanName) {
+			this.mBeanName = mBeanName;
+		}
+		
+		@Override
+		public Collection<Chart> initialize() throws InitializationException {
+			List<Chart> allChart = new LinkedList<>();
+			
+			Chart chart = new Chart("jmx", mBeanName.getCanonicalName(), mBeanName.getCanonicalName(), mBeanName.getCanonicalName(), "number", mBeanServer.toString(), mBeanName.getKeyProperty("type"), ChartType.LINE, 10000, 1);
+
+			allChart.add(chart);
+			
+			return allChart;
+		}
+
+		@Override
+		public Collection<Chart> collectValues() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
 	private MBeanServerConnection mBeanServer;
 
-	private List<MBeanCollector> allMBeanCollector = new ArrayList<>();
+	
+	private List<MBeanCollector> allMBeanCollector = new LinkedList<>();
 
 	public MBeanServerCollector(MBeanServerConnection mBeanServer) {
 		this.mBeanServer = mBeanServer;
@@ -34,6 +67,8 @@ public class MBeanServerCollector implements Collector {
 
 	@Override
 	public Collection<Chart> initialize() throws InitializationException {
+		List<Chart> allChart = new LinkedList<>();
+		
 		// Step 1
 		// Get all MBeans
 		Set<ObjectName> allMBeanName;
@@ -47,25 +82,54 @@ public class MBeanServerCollector implements Collector {
 		while (allMBeanNameIterator.hasNext()) {
 			ObjectName mBeanName = allMBeanNameIterator.next();
 
-			System.out.println(mBeanName.toString());
-
+			MBeanCollector collector = new MBeanCollector(mBeanName);
+			
+			allChart.addAll(collector.initialize());
+			
+			allChart.add(chart);
+			MBeanAttributeInfo[] mBeanInfo;
 			try {
-				MBeanAttributeInfo[] mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
+				 mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
+				
 			} catch (InstanceNotFoundException | IntrospectionException | ReflectionException | IOException e) {
 				// TODO : Proper error handling
 				allMBeanNameIterator.remove();
+				continue;
 			}
-
+			
+			
+			 for(MBeanAttributeInfo info : mBeanInfo) {
+				 switch(info.getType()) {
+				 case "long":
+					 try {
+						long value = (long) mBeanServer.getAttribute(mBeanName, info.getName());
+						
+						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1, false, value);
+						chart.getAllDimension().add(dim);
+						
+					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
+							| ReflectionException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					 break;
+				 }
+			 }
 		}
 
 		// TODO Auto-generated method stub
-		return null;
+		return allChart;
 	}
 
 	@Override
 	public Collection<Chart> collectValues() {
-		// TODO Auto-generated method stub
-		return null;
+		for(Chart chart : allChart) {
+			for(Dimension dim : chart.getAllDimension()) {
+				
+			}
+		}
+		
+		return allChart;
 	}
 
 }
