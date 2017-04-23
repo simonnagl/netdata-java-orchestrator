@@ -40,7 +40,7 @@ public final class Printer {
 		sb.append(chart.getUnits());
 		sb.append(' ');
 		// Append familiy
-		if (!chart.hasFamily()) {
+		if (chart.hasFamily()) {
 			sb.append(chart.getFamily());
 		} else {
 			sb.append(chart.getId());

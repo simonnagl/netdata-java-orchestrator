@@ -42,8 +42,8 @@ public class MBeanServerCollector implements Collector {
 		public Collection<Chart> initialize() throws InitializationException {
 
 			Chart chart = new Chart("jmx",
-					mBeanName.getDomain().replaceAll("[.]", "_") + mBeanName.getKeyProperty("type")
-							+ mBeanName.getKeyProperty("name"),
+					mBeanName.getCanonicalName().replaceAll("[.]", "").replaceAll(" ", "").replaceAll(",", "")
+							.replaceAll("=", "").replaceAll(":", ""),
 					null, "Test", "number", "fam", "con", ChartType.LINE, 10000, 1);
 
 			MBeanAttributeInfo[] mBeanInfo;
