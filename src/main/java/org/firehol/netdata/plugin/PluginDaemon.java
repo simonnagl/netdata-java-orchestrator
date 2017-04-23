@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-import org.firehol.netdata.plugin.config.BaseConfig;
+import org.firehol.netdata.plugin.configuration.PluginDaemonConfiguration;
 import org.firehol.netdata.plugin.jmx.JmxPlugin;
 import org.firehol.netdata.utils.AlignToTimeIntervalService;
 import org.firehol.netdata.utils.UnitConversion;
@@ -36,10 +36,31 @@ import org.firehol.netdata.utils.UnitConversion;
 public class PluginDaemon {
 	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
+	private static void exit(String info) {
+		log.severe(info);
+		Printer.disable();
+		System.exit(1);
+	}
+
 	public static void main(final String[] args) {
 		log.fine("Get options from environment");
-		Long updateEverySec = Long.valueOf(System.getenv("NETDATA_UPDATE_EVERY"));
-		Path configDir = Paths.get(System.getenv("NETDATA_CONFIG_DIR"));
+
+		log.finer("Parse environment variable NETDATA_UPDATE_EVERY");
+		String updateEverySecString = System.getenv("NETDATA_UPDATE_EVERY");
+		Long updateEverySec;
+		try {
+			updateEverySec = Long.valueOf(updateEverySecString);
+		} catch (NumberFormatException e) {
+			exit("Could not parse NETDATA_UPDATE_EVERY = " + updateEverySecString);
+			throw new RuntimeException(); // To prevent compile errors.
+		}
+
+		log.finer("Parse environment variable NETDATA_CONFIG_DIR");
+		String configDirString = System.getenv("NETDATA_CONFIG_DIR");
+		if (configDirString == null) {
+			exit("No NETDATA_CONFIG_DIR provided");
+		}
+		Path configDir = Paths.get(configDirString);
 
 		PluginHolder pluginHolder = PluginHolder.getInstance();
 
@@ -48,23 +69,21 @@ public class PluginDaemon {
 		// PluginHolder will remove them later.
 		pluginHolder.add(new JmxPlugin());
 
-		BaseConfig globalConfig = pluginHolder.readConfiguration(configDir);
+		PluginDaemonConfiguration globalConfig = pluginHolder.readConfiguration(configDir);
 
 		pluginHolder.initializeCharts();
 
 		if (pluginHolder.getAllPluginSize() < 1) {
-			log.severe("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
-			Printer.disable();
-			System.exit(1);
+			exit("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
 		}
 
 		// Check if configuration tells us to update less often the caller tells
 		// us to.
-		long configuredUpdateEverySec = Long
-				.valueOf(globalConfig.get("global", "update every", updateEverySec.toString()));
+		long configuredUpdateEverySec = globalConfig.getUpdateEvery();
 		if (configuredUpdateEverySec < updateEverySec) {
-			log.warning("Invalid option in sectino global detected. 'update every' is less than " + updateEverySec
-					+ "which is the minimal requested value.");
+			log.warning("Invalid option detected. 'update every' is less than " + updateEverySec
+					+ " which is the minimal requested value.");
+			globalConfig.setUpdateEvery(updateEverySec);
 		} else {
 			updateEverySec = configuredUpdateEverySec;
 		}

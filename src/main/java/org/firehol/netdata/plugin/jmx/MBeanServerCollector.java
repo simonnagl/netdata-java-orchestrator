@@ -2,11 +2,12 @@ package org.firehol.netdata.plugin.jmx;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -16,46 +17,93 @@ import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.management.RuntimeMBeanException;
 
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.ChartType;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.exception.InitializationException;
-import org.firehol.netdata.exception.NotImplementedException;
 import org.firehol.netdata.plugin.Collector;
 
 public class MBeanServerCollector implements Collector {
+	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+
 	private class MBeanCollector implements Collector {
 
 		private ObjectName mBeanName;
-		
+		private List<Chart> allChart = new LinkedList<>();
+
 		public MBeanCollector(ObjectName mBeanName) {
 			this.mBeanName = mBeanName;
 		}
-		
+
 		@Override
 		public Collection<Chart> initialize() throws InitializationException {
-			List<Chart> allChart = new LinkedList<>();
-			
-			Chart chart = new Chart("jmx", mBeanName.getCanonicalName(), mBeanName.getCanonicalName(), mBeanName.getCanonicalName(), "number", mBeanServer.toString(), mBeanName.getKeyProperty("type"), ChartType.LINE, 10000, 1);
+
+			Chart chart = new Chart("jmx",
+					mBeanName.getDomain().replaceAll("[.]", "_") + mBeanName.getKeyProperty("type")
+							+ mBeanName.getKeyProperty("name"),
+					null, "Test", "number", "fam", "con", ChartType.LINE, 10000, 1);
+
+			MBeanAttributeInfo[] mBeanInfo;
+			try {
+				mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
+			} catch (InstanceNotFoundException | IntrospectionException | ReflectionException | IOException e) {
+				throw new InitializationException(e);
+			}
+
+			for (MBeanAttributeInfo info : mBeanInfo) {
+				switch (info.getType()) {
+				case "long":
+					try {
+						long value = (long) mBeanServer.getAttribute(mBeanName, info.getName());
+
+						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1,
+								false, value);
+						chart.getAllDimension().add(dim);
+
+					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
+							| ReflectionException | IOException e) {
+						System.err.println("Wrap");
+						e.printStackTrace();
+					} catch (RuntimeMBeanException e) {
+						log.warning("" + info.getName() + ": " + e.getMessage());
+					}
+					break;
+				}
+			}
 
 			allChart.add(chart);
-			
+
 			return allChart;
 		}
 
 		@Override
 		public Collection<Chart> collectValues() {
-			// TODO Auto-generated method stub
-			return null;
+
+			for (Chart chart : allChart) {
+				for (Dimension dim : chart.getAllDimension()) {
+					try {
+						long value = (long) mBeanServer.getAttribute(mBeanName, dim.getName());
+						dim.setCurrentValue(value);
+					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
+							| ReflectionException | IOException e) {
+						System.err.println("Wrap");
+						e.printStackTrace();
+					} catch (RuntimeMBeanException e) {
+						log.warning("" + dim.getName() + ": " + e.getMessage());
+					}
+				}
+			}
+
+			return allChart;
 		}
-		
+
 	}
-	
+
 	private MBeanServerConnection mBeanServer;
 
-	
 	private List<MBeanCollector> allMBeanCollector = new LinkedList<>();
 
 	public MBeanServerCollector(MBeanServerConnection mBeanServer) {
@@ -69,7 +117,7 @@ public class MBeanServerCollector implements Collector {
 	@Override
 	public Collection<Chart> initialize() throws InitializationException {
 		List<Chart> allChart = new LinkedList<>();
-		
+
 		// Step 1
 		// Get all MBeans
 		Set<ObjectName> allMBeanName;
@@ -84,44 +132,24 @@ public class MBeanServerCollector implements Collector {
 			ObjectName mBeanName = allMBeanNameIterator.next();
 
 			MBeanCollector collector = new MBeanCollector(mBeanName);
-			
-			allChart.addAll(collector.initialize());
-			MBeanAttributeInfo[] mBeanInfo;
+
 			try {
-				 mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
-				
-			} catch (InstanceNotFoundException | IntrospectionException | ReflectionException | IOException e) {
-				// TODO : Proper error handling
+				allChart.addAll(collector.initialize());
+				allMBeanCollector.add(collector);
+			} catch (InitializationException e) {
 				allMBeanNameIterator.remove();
 				continue;
 			}
-			
-			
-			 for(MBeanAttributeInfo info : mBeanInfo) {
-				 switch(info.getType()) {
-				 case "long":
-					 try {
-						long value = (long) mBeanServer.getAttribute(mBeanName, info.getName());
-						
-						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1, false, value);
-						
-					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
-							| ReflectionException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					 break;
-				 }
-			 }
+
 		}
 
-		// TODO Auto-generated method stub
 		return allChart;
 	}
 
 	@Override
 	public Collection<Chart> collectValues() {
-		throw new NotImplementedException("Collect the values of all MBeans in this MBeanServer");
+		return allMBeanCollector.stream().map(MBeanCollector::collectValues).flatMap(Collection::stream)
+				.collect(Collectors.toList());
 	}
 
 }

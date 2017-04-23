@@ -6,43 +6,58 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
+import javax.naming.ConfigurationException;
+
 import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.plugin.config.BaseConfig;
-import org.firehol.netdata.plugin.config.ChildConfig;
-import org.firehol.netdata.plugin.config.Config;
-import org.firehol.netdata.plugin.config.exception.ParsingException;
+import org.firehol.netdata.plugin.configuration.ConfigurationService;
+import org.firehol.netdata.plugin.configuration.PluginDaemonConfiguration;
+import org.firehol.netdata.plugin.configuration.exception.ParseException;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public abstract class AbstractPlugin implements Collector {
+public abstract class AbstractPlugin<C> implements Collector {
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
-	private final String name;
+	@Setter
+	private PluginDaemonConfiguration baseConfig;
 
-	private Config config;
+	private C configuration;
 
 	private LinkedList<Chart> allChart;
 
-	public AbstractPlugin() {
-		this.name = this.setName();
-	}
-
-	public void readConfig(final Path javaPluginConfigPath, final BaseConfig baseConfig) {
-		Path configPath = javaPluginConfigPath.resolve(getName()).resolve(".conf");
+	public C readConfiguration(final Path pluginConfigurationFolder) throws ConfigurationException, IOException {
+		Path configPath = pluginConfigurationFolder.resolve(getName()).resolve(".conf");
 
 		try {
-			config = new ChildConfig(configPath, baseConfig);
-		} catch (ParsingException | IOException e) {
-			log.warning("Could not read config file'" + configPath.toAbsolutePath().toString() + "' of plugin "
-					+ getName() + ". Reason: " + e.getMessage());
-			config = baseConfig;
+			configuration = ConfigurationService.getInstance().readConfiguration(configPath.toFile(),
+					getConfigurationScheme());
+			return configuration;
+		} catch (ParseException e) {
+			log.warning("Could not read malformed configuration file '" + configPath.toAbsolutePath().toString() + "'");
+			throw e;
+		} catch (IOException e) {
+			log.warning("Could not read configuration file '" + configPath.toAbsolutePath().toString() + "'");
+			throw e;
+		} finally {
+			if (configuration == null) {
+				try {
+					configuration = getConfigurationScheme().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					log.severe("Could not instancize default Configuration");
+				}
+			}
 		}
 	}
 
-	public abstract String setName();
+	protected abstract Class<C> getConfigurationScheme();
+
+	public abstract String getName();
 
 	public abstract Collection<Chart> initialize();
+
+	public abstract void cleanup();
 
 	public abstract Collection<Chart> collectValues();
 }
