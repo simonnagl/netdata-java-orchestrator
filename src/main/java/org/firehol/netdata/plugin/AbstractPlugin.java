@@ -28,7 +28,7 @@ public abstract class AbstractPlugin<C> implements Collector {
 	private LinkedList<Chart> allChart;
 
 	public C readConfiguration(final Path pluginConfigurationFolder) throws ConfigurationException, IOException {
-		Path configPath = pluginConfigurationFolder.resolve(getName()).resolve(".conf");
+		Path configPath = pluginConfigurationFolder.resolve(getName() + ".conf");
 
 		try {
 			configuration = ConfigurationService.getInstance().readConfiguration(configPath.toFile(),

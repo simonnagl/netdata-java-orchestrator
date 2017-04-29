@@ -20,7 +20,6 @@ import javax.management.ReflectionException;
 import javax.management.RuntimeMBeanException;
 
 import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.ChartType;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.exception.InitializationException;
@@ -41,10 +40,7 @@ public class MBeanServerCollector implements Collector {
 		@Override
 		public Collection<Chart> initialize() throws InitializationException {
 
-			Chart chart = new Chart("jmx",
-					mBeanName.getCanonicalName().replaceAll("[.]", "").replaceAll(" ", "").replaceAll(",", "")
-							.replaceAll("=", "").replaceAll(":", ""),
-					null, "Test", "number", "fam", "con", ChartType.LINE, 10000, 1);
+			Chart chart = ObjectNameToChartConverter.getInstance().convert(mBeanName);
 
 			MBeanAttributeInfo[] mBeanInfo;
 			try {
@@ -71,6 +67,25 @@ public class MBeanServerCollector implements Collector {
 						log.warning("" + info.getName() + ": " + e.getMessage());
 					}
 					break;
+				case "int":
+					try {
+						int value = (int) mBeanServer.getAttribute(mBeanName, info.getName());
+
+						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1,
+								false, value);
+						chart.getAllDimension().add(dim);
+
+					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
+							| ReflectionException | IOException e) {
+						System.err.println("Wrap");
+						e.printStackTrace();
+					} catch (RuntimeMBeanException e) {
+						log.warning("" + info.getName() + ": " + e.getMessage());
+					}
+					break;
+				default:
+					log.info(info.getType());
+					break;
 				}
 			}
 
@@ -85,7 +100,7 @@ public class MBeanServerCollector implements Collector {
 			for (Chart chart : allChart) {
 				for (Dimension dim : chart.getAllDimension()) {
 					try {
-						long value = (long) mBeanServer.getAttribute(mBeanName, dim.getName());
+						long value = Long.parseLong(mBeanServer.getAttribute(mBeanName, dim.getName()).toString());
 						dim.setCurrentValue(value);
 					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
 							| ReflectionException | IOException e) {

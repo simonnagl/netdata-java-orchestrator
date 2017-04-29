@@ -28,7 +28,9 @@ public final class Printer {
 		sb.append(' ');
 		// Append name
 		if (chart.hasName()) {
+			sb.append('\'');
 			sb.append(chart.getName());
+			sb.append('\'');
 		} else {
 			sb.append("null");
 		}

@@ -77,17 +77,6 @@ public class PluginDaemon {
 			exit("No Java Plugins avaiable. Disabling Java Plugin Daemon.");
 		}
 
-		// Check if configuration tells us to update less often the caller tells
-		// us to.
-		long configuredUpdateEverySec = globalConfig.getUpdateEvery();
-		if (configuredUpdateEverySec < updateEverySec) {
-			log.warning("Invalid option detected. 'update every' is less than " + updateEverySec
-					+ " which is the minimal requested value.");
-			globalConfig.setUpdateEvery(updateEverySec);
-		} else {
-			updateEverySec = configuredUpdateEverySec;
-		}
-
 		// Start the main loop
 		long updateEveryNSec = updateEverySec * UnitConversion.NANO_PER_PLAIN;
 		AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
