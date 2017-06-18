@@ -102,13 +102,13 @@ public class JmxPlugin extends AbstractPlugin<JmxPluginConfiguration> {
 				continue;
 			}
 
-			MBeanServerCollector collector = new MBeanServerCollector(mBeanServer);
+			MBeanServerCollector collector = new MBeanServerCollector(mBeanServer, serverConfiguartion.getPort());
 			allMBeanCollector.add(collector);
 		}
 
 		// Connect to the local MBeanServer
 
-		MBeanServerCollector collector = new MBeanServerCollector(ManagementFactory.getPlatformMBeanServer());
+		MBeanServerCollector collector = new MBeanServerCollector(ManagementFactory.getPlatformMBeanServer(), -1);
 		allMBeanCollector.add(collector);
 
 		// Initialize MBeanServer

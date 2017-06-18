@@ -40,7 +40,7 @@ public class MBeanServerCollector implements Collector {
 		@Override
 		public Collection<Chart> initialize() throws InitializationException {
 
-			Chart chart = ObjectNameToChartConverter.getInstance().convert(mBeanName);
+			Chart chart = ObjectNameToChartConverter.getInstance().convert(mBeanName, port);
 
 			MBeanAttributeInfo[] mBeanInfo;
 			try {
@@ -119,10 +119,13 @@ public class MBeanServerCollector implements Collector {
 
 	private MBeanServerConnection mBeanServer;
 
+	int port;
+
 	private List<MBeanCollector> allMBeanCollector = new LinkedList<>();
 
-	public MBeanServerCollector(MBeanServerConnection mBeanServer) {
+	public MBeanServerCollector(MBeanServerConnection mBeanServer, int port) {
 		this.mBeanServer = mBeanServer;
+		this.port = port;
 	}
 
 	public MBeanServerConnection getmBeanServer() {

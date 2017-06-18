@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class JmxServerConfiguration {
 	int port;
+	String name;
 }

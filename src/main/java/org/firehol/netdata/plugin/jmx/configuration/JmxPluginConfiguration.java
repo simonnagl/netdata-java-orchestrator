@@ -10,4 +10,6 @@ import lombok.Setter;
 @Setter
 public class JmxPluginConfiguration {
 	private List<JmxServerConfiguration> jmxServers = new ArrayList<>();
+
+	private List<JmxChartConfiguration> commonCharts = new ArrayList<>();
 }
