@@ -94,6 +94,10 @@ public class Chart {
 		return getFamily() != null;
 	}
 
+	public boolean hasContext() {
+		return getContext() != null;
+	}
+
 	public boolean hasUpdateEvery() {
 		return getUpdateEvery() < 1;
 	}

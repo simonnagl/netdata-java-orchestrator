@@ -48,6 +48,13 @@ public final class Printer {
 			sb.append(chart.getId());
 		}
 		sb.append(' ');
+		// Append context
+		if (chart.hasContext()) {
+			sb.append(chart.getContext());
+		} else {
+			sb.append(chart.getId());
+		}
+		sb.append(' ');
 		// Append chart type
 		sb.append(chart.getChartType());
 		sb.append(' ');

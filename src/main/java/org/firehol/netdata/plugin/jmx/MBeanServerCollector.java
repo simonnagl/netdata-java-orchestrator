@@ -69,7 +69,8 @@ public class MBeanServerCollector {
 				chart.setId(chartConfig.getId());
 				chart.setTitle(chartConfig.getTitle());
 				chart.setUnits(chartConfig.getUnits());
-				chart.setPriority(129000);
+				chart.setPriority(8000);
+				chart.setContext(name);
 				chart.setUpdateEvery(1);
 				chart.setChartType(chartConfig.getChartType());
 
