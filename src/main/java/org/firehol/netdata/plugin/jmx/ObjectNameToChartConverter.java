@@ -19,7 +19,7 @@ public class ObjectNameToChartConverter {
 		return INSTANCE;
 	}
 
-	public Chart convert(ObjectName jmxBean, int port) {
+	public Chart convert(ObjectName jmxBean, String name) {
 		String jmxBeanName = jmxBean.getKeyProperty("name");
 		if (jmxBeanName != null) {
 			jmxBeanName = jmxBeanName.replaceAll(" ", "_");
@@ -29,18 +29,18 @@ public class ObjectNameToChartConverter {
 
 		String id = jmxBean.getCanonicalName().replaceAll("[.]", "/").replaceAll(":", "-").replaceAll(",", "-")
 				.replaceAll(" ", "_").replaceAll("=", "-");
-		String name = jmxBeanName;
+		String beanName = jmxBeanName;
 		if (name == null) {
 			name = jmxBeanDomain + jmxBeanType;
 		}
 		String title = new StringBuilder(jmxBean.getDomain()).append('.').append(jmxBeanName).toString();
-		String family = String.valueOf(port);
+		String family = name;
 		String context = jmxBeanType;
 		if (context == null) {
 			context = jmxBeanDomain;
 		}
 
-		return new Chart("jmx", id, name, title, "num", family, context, ChartType.LINE, 15000, 1);
+		return new Chart("jmx", id, beanName, title, "num", family, context, ChartType.LINE, 15000, 1);
 	}
 
 }

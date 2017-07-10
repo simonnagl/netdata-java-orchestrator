@@ -102,13 +102,14 @@ public class JmxPlugin extends AbstractPlugin<JmxPluginConfiguration> {
 				continue;
 			}
 
-			MBeanServerCollector collector = new MBeanServerCollector(mBeanServer, serverConfiguartion.getPort());
+			MBeanServerCollector collector = new MBeanServerCollector(serverConfiguartion.getName(), mBeanServer);
 			allMBeanCollector.add(collector);
 		}
 
 		// Connect to the local MBeanServer
 
-		MBeanServerCollector collector = new MBeanServerCollector(ManagementFactory.getPlatformMBeanServer(), -1);
+		MBeanServerCollector collector = new MBeanServerCollector("NetdataJavaDaemon",
+				ManagementFactory.getPlatformMBeanServer());
 		allMBeanCollector.add(collector);
 
 		// Initialize MBeanServer
@@ -119,7 +120,7 @@ public class JmxPlugin extends AbstractPlugin<JmxPluginConfiguration> {
 		while (mBeanCollectorIterator.hasNext()) {
 			MBeanServerCollector mBeanCollector = mBeanCollectorIterator.next();
 			try {
-				allChart.addAll(mBeanCollector.initialize());
+				allChart.addAll(mBeanCollector.initialize(getConfiguration().getCommonCharts()));
 			} catch (InitializationException e) {
 				log.warning("Could not initialize JMX plugin " + mBeanCollector.getmBeanServer().toString());
 				mBeanCollectorIterator.remove();

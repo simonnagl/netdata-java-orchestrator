@@ -35,7 +35,8 @@ public abstract class AbstractPlugin<C> implements Collector {
 					getConfigurationScheme());
 			return configuration;
 		} catch (ParseException e) {
-			log.warning("Could not read malformed configuration file '" + configPath.toAbsolutePath().toString() + "'");
+			log.warning("Could not read malformed configuration file '" + configPath.toAbsolutePath().toString()
+					+ "'. Reason: " + e.getMessage());
 			throw e;
 		} catch (IOException e) {
 			log.warning("Could not read configuration file '" + configPath.toAbsolutePath().toString() + "'");

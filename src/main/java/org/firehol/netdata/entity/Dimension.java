@@ -14,31 +14,31 @@ public class Dimension {
 	 * Identifier of this dimension (it is a text value, not numeric), this will
 	 * be needed later to add values to the dimension.
 	 */
-	String id;
+	private String id;
 	/**
 	 * Name of the dimension as it will appear at the legend of the chart, if
 	 * empty or missing the id will be used.
 	 */
-	String name;
-	DimensionAlgorithm algorithm = DimensionAlgorithm.ABSOLUTE;
+	private String name;
+	private DimensionAlgorithm algorithm = DimensionAlgorithm.ABSOLUTE;
 	/**
 	 * Multiply the collected value.
 	 */
-	int multiplier = 1;
+	private int multiplier = 1;
 	/**
 	 * Divide the collected value.
 	 */
-	int divisor = 1;
+	private int divisor = 1;
 	/**
 	 * Make this dimension hidden, it will take part in the calculations but
 	 * will not be presented in the chart.
 	 */
-	boolean hidden;
+	private boolean hidden;
 
 	/**
 	 * Current collected value
 	 */
-	long currentValue;
+	private long currentValue;
 
 	public boolean hasName() {
 		return getName() != null;

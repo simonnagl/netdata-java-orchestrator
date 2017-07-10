@@ -2,172 +2,171 @@ package org.firehol.netdata.plugin.jmx;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
-import javax.management.RuntimeMBeanException;
 
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
-import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.exception.InitializationException;
-import org.firehol.netdata.plugin.Collector;
+import org.firehol.netdata.exception.NotImplementedException;
+import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 
-public class MBeanServerCollector implements Collector {
-	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+import lombok.Getter;
+import lombok.Setter;
 
-	private class MBeanCollector implements Collector {
+public class MBeanServerCollector {
 
-		private ObjectName mBeanName;
-		private List<Chart> allChart = new LinkedList<>();
-
-		public MBeanCollector(ObjectName mBeanName) {
-			this.mBeanName = mBeanName;
-		}
-
-		@Override
-		public Collection<Chart> initialize() throws InitializationException {
-
-			Chart chart = ObjectNameToChartConverter.getInstance().convert(mBeanName, port);
-
-			MBeanAttributeInfo[] mBeanInfo;
-			try {
-				mBeanInfo = mBeanServer.getMBeanInfo(mBeanName).getAttributes();
-			} catch (InstanceNotFoundException | IntrospectionException | ReflectionException | IOException e) {
-				throw new InitializationException(e);
-			}
-
-			for (MBeanAttributeInfo info : mBeanInfo) {
-				switch (info.getType()) {
-				case "long":
-					try {
-						long value = (long) mBeanServer.getAttribute(mBeanName, info.getName());
-
-						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1,
-								false, value);
-						chart.getAllDimension().add(dim);
-
-					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
-							| ReflectionException | IOException e) {
-						System.err.println("Wrap");
-						e.printStackTrace();
-					} catch (RuntimeMBeanException e) {
-						log.warning("" + info.getName() + ": " + e.getMessage());
-					}
-					break;
-				case "int":
-					try {
-						int value = (int) mBeanServer.getAttribute(mBeanName, info.getName());
-
-						Dimension dim = new Dimension(info.getName(), info.getName(), DimensionAlgorithm.ABSOLUTE, 1, 1,
-								false, value);
-						chart.getAllDimension().add(dim);
-
-					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
-							| ReflectionException | IOException e) {
-						System.err.println("Wrap");
-						e.printStackTrace();
-					} catch (RuntimeMBeanException e) {
-						log.warning("" + info.getName() + ": " + e.getMessage());
-					}
-					break;
-				default:
-					log.info(info.getType());
-					break;
-				}
-			}
-
-			allChart.add(chart);
-
-			return allChart;
-		}
-
-		@Override
-		public Collection<Chart> collectValues() {
-
-			for (Chart chart : allChart) {
-				for (Dimension dim : chart.getAllDimension()) {
-					try {
-						long value = Long.parseLong(mBeanServer.getAttribute(mBeanName, dim.getName()).toString());
-						dim.setCurrentValue(value);
-					} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException
-							| ReflectionException | IOException e) {
-						System.err.println("Wrap");
-						e.printStackTrace();
-					} catch (RuntimeMBeanException e) {
-						log.warning("" + dim.getName() + ": " + e.getMessage());
-					}
-				}
-			}
-
-			return allChart;
-		}
-
+	@Getter
+	@Setter
+	private class MBeanQueryInfo {
+		private ObjectName name;
+		private String attribute;
+		private List<Dimension> dimensions = new LinkedList<>();
 	}
+
+	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
 	private MBeanServerConnection mBeanServer;
 
-	int port;
+	private List<MBeanQueryInfo> allMBeanQueryInfo = new LinkedList<>();
 
-	private List<MBeanCollector> allMBeanCollector = new LinkedList<>();
+	private List<Chart> allChart = new LinkedList<>();
 
-	public MBeanServerCollector(MBeanServerConnection mBeanServer, int port) {
+	/**
+	 * Name represented to the user.
+	 */
+	String name;
+
+	public MBeanServerCollector(String name, MBeanServerConnection mBeanServer) {
+		this.name = name;
 		this.mBeanServer = mBeanServer;
-		this.port = port;
 	}
 
 	public MBeanServerConnection getmBeanServer() {
 		return mBeanServer;
 	}
 
-	@Override
-	public Collection<Chart> initialize() throws InitializationException {
-		List<Chart> allChart = new LinkedList<>();
+	public Collection<Chart> initialize(Collection<JmxChartConfiguration> allChartConfig)
+			throws InitializationException {
 
 		// Step 1
-		// Get all MBeans
-		Set<ObjectName> allMBeanName;
-		try {
-			allMBeanName = mBeanServer.queryNames(null, null);
-		} catch (IOException e) {
-			throw new InitializationException("Could not initialize mBeanServer", e);
-		}
-
-		Iterator<ObjectName> allMBeanNameIterator = allMBeanName.iterator();
-		while (allMBeanNameIterator.hasNext()) {
-			ObjectName mBeanName = allMBeanNameIterator.next();
-
-			MBeanCollector collector = new MBeanCollector(mBeanName);
-
+		// Check commonChart configuration
+		for (JmxChartConfiguration chartConfig : allChartConfig) {
 			try {
-				allChart.addAll(collector.initialize());
-				allMBeanCollector.add(collector);
-			} catch (InitializationException e) {
-				allMBeanNameIterator.remove();
-				continue;
-			}
+				Chart chart = new Chart();
+				chart.setType("Jmx");
+				chart.setFamily(name);
+				chart.setId(chartConfig.getId());
+				chart.setTitle(chartConfig.getTitle());
+				chart.setUnits(chartConfig.getUnits());
+				chart.setPriority(129000);
+				chart.setUpdateEvery(1);
+				chart.setChartType(chartConfig.getChartType());
 
+				// Check if the mBeanServer has the desired sources.
+				for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
+					ObjectName name = ObjectName.getInstance(dimensionConfig.getFrom());
+					Object info = mBeanServer.getAttribute(name, dimensionConfig.getValue());
+
+					log.info("mBean value " + info);
+
+					Dimension dim = new Dimension(dimensionConfig.getName(), dimensionConfig.getName(),
+							chartConfig.getDimType(), 1, 1, false, 0);
+					chart.getAllDimension().add(dim);
+
+					MBeanQueryInfo queryInfo = new MBeanQueryInfo();
+					queryInfo.setName(name);
+					queryInfo.setAttribute(dimensionConfig.getValue());
+					queryInfo.getDimensions().add(dim);
+					allMBeanQueryInfo.add(queryInfo);
+				}
+
+				allChart.add(chart);
+
+			} catch (MalformedObjectNameException e) {
+				log.warning("dimensionConfig contains invalid object name");
+				continue;
+			} catch (InstanceNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ReflectionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AttributeNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MBeanException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return allChart;
 	}
 
-	@Override
 	public Collection<Chart> collectValues() {
-		return allMBeanCollector.stream().map(MBeanCollector::collectValues).flatMap(Collection::stream)
-				.collect(Collectors.toList());
+
+		// Step 1
+		// Query all attributes and fill charts.
+		for (MBeanQueryInfo queryInfo : allMBeanQueryInfo) {
+
+			try {
+				Object value = mBeanServer.getAttribute(queryInfo.name, queryInfo.attribute);
+
+				long longValue = 0L;
+
+				if (value instanceof Integer) {
+					longValue = ((Integer) value).longValue();
+				} else {
+					longValue = (long) value;
+				}
+
+				for (Dimension dim : queryInfo.dimensions) {
+					dim.setCurrentValue(longValue);
+				}
+			} catch (AttributeNotFoundException e) {
+				// The attribute specified is not accessible in the MBean.
+				// This should never happen here.
+
+				throw new NotImplementedException("Error handling of AttributeNotFoundException");
+			} catch (InstanceNotFoundException e) {
+				// The MBean specified was unregistered in the MBean server.
+
+				throw new NotImplementedException("Error handling of InstanceNotFoundException");
+			} catch (MBeanException e) {
+				// Wraps an exception thrown by the MBean's getter.
+
+				throw new NotImplementedException("Error handling of MBeanException");
+			} catch (ReflectionException e) {
+				// Wraps a java.lang.Exception thrown when trying to invoke the
+				// setter.
+				// This should never happen. We only Query getter.
+
+				throw new NotImplementedException("Error handling of ReflectionException");
+			} catch (IOException e) {
+				// A communication problem occurred when talking to the MBean
+				// server.
+
+				throw new NotImplementedException("Error handling of IOException");
+			}
+
+		}
+
+		// Return Updated Charts.
+		return allChart;
 	}
 
 }
