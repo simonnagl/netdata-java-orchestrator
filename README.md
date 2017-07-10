@@ -8,6 +8,13 @@ A [netdata](https://github.com/firehol/netdata) Java plugin daemon.
 
 ## Installation
 
+```
+mvn package
+cp src/main/sh/java.d.plugin /your/netdata/plugin/dir
+cp -r config/* /your/netdata/config/dir
+cp target/java-daemon-0.1.0-SNAPSHOT.jar /tmp
+```
+
 ## License
 
 netdata-plugin-java-daemon is [GPLv3+](LICENSE).
