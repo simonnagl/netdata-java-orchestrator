@@ -12,22 +12,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Chart {
-	public Chart(final String type, final String id, final String name, final String title, final String units,
-			final String family, final String context, final ChartType chartType, final int priority,
-			final int updateEvery) {
-		super();
-		this.type = type;
-		this.id = id;
-		this.name = name;
-		this.title = title;
-		this.units = units;
-		this.family = family;
-		this.context = context;
-		this.chartType = chartType;
-		this.priority = priority;
-		this.updateEvery = updateEvery;
-	}
-
 	/**
 	 * Controls the menu the charts will appear in.
 	 */
