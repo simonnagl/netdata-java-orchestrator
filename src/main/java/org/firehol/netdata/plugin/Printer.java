@@ -104,7 +104,11 @@ public final class Printer {
 		print("BEGIN " + chart.getType() + "." + chart.getId());
 
 		for (Dimension dim : chart.getAllDimension()) {
-			print("SET " + dim.getId() + " = " + dim.getCurrentValue());
+			Long value = dim.getCurrentValue();
+			if (value != null) {
+				print("SET " + dim.getId() + " = " + dim.getCurrentValue());
+				dim.setCurrentValue(null);
+			}
 		}
 
 		print("END");
