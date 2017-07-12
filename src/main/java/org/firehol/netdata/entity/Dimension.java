@@ -1,6 +1,5 @@
 package org.firehol.netdata.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Dimension {
 	/**
 	 * Identifier of this dimension (it is a text value, not numeric), this will
@@ -36,9 +34,9 @@ public class Dimension {
 	private boolean hidden;
 
 	/**
-	 * Current collected value
+	 * Current collected value. Null if the last value was sent to netdata.
 	 */
-	private long currentValue;
+	private Long currentValue;
 
 	public boolean hasName() {
 		return getName() != null;

@@ -34,6 +34,8 @@ public class MBeanServerCollector {
 		private List<Dimension> dimensions = new LinkedList<>();
 	}
 
+	private final int LONG_RESOLUTION = 100;
+
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
 	private MBeanServerConnection mBeanServer;
@@ -62,108 +64,114 @@ public class MBeanServerCollector {
 		// Step 1
 		// Check commonChart configuration
 		for (JmxChartConfiguration chartConfig : allChartConfig) {
-			try {
-				Chart chart = new Chart();
-				chart.setType("Jmx");
-				chart.setFamily(name);
-				chart.setId(chartConfig.getId());
-				chart.setTitle(chartConfig.getTitle());
-				chart.setUnits(chartConfig.getUnits());
-				chart.setPriority(8000);
-				chart.setContext(name);
-				chart.setUpdateEvery(1);
-				chart.setChartType(chartConfig.getChartType());
+			Chart chart = new Chart();
+			chart.setType("Jmx");
+			chart.setFamily(name);
+			chart.setId(chartConfig.getId());
+			chart.setTitle(chartConfig.getTitle());
+			chart.setUnits(chartConfig.getUnits());
+			chart.setPriority(8000);
+			chart.setContext(name);
+			chart.setUpdateEvery(1);
+			chart.setChartType(chartConfig.getChartType());
 
-				// Check if the mBeanServer has the desired sources.
-				for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
-					ObjectName name = ObjectName.getInstance(dimensionConfig.getFrom());
-					Object info = mBeanServer.getAttribute(name, dimensionConfig.getValue());
-
-					log.info("mBean value " + info);
-
-					Dimension dim = new Dimension(dimensionConfig.getName(), dimensionConfig.getName(),
-							chartConfig.getDimType(), 1, 1, false, 0);
-					chart.getAllDimension().add(dim);
-
-					MBeanQueryInfo queryInfo = new MBeanQueryInfo();
-					queryInfo.setName(name);
-					queryInfo.setAttribute(dimensionConfig.getValue());
-					queryInfo.getDimensions().add(dim);
-					allMBeanQueryInfo.add(queryInfo);
+			// Check if the mBeanServer has the desired sources.
+			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
+				ObjectName name = null;
+				try {
+					name = ObjectName.getInstance(dimensionConfig.getFrom());
+				} catch (MalformedObjectNameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (name == null) {
+					// TODO: Proper error message
+					continue;
 				}
 
-				allChart.add(chart);
+				Object value = getAttribute(name, dimensionConfig.getValue());
 
-			} catch (MalformedObjectNameException e) {
-				log.warning("dimensionConfig contains invalid object name");
-				continue;
-			} catch (InstanceNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ReflectionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (AttributeNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MBeanException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Dimension dimension = new Dimension();
+				dimension.setId(dimensionConfig.getName());
+				dimension.setName(dimensionConfig.getName());
+				dimension.setAlgorithm(chartConfig.getDimType());
+				// dimension.setMultiplier();
+				// dimension.setDivisor();
+				if (value instanceof Double) {
+					dimension.setDivisor(this.LONG_RESOLUTION);
+				}
+
+				// Add to chart
+				chart.getAllDimension().add(dimension);
+
+				// Add to queryInfo
+				MBeanQueryInfo queryInfo = new MBeanQueryInfo();
+				queryInfo.setName(name);
+				queryInfo.setAttribute(dimensionConfig.getValue());
+				queryInfo.getDimensions().add(dimension);
+				allMBeanQueryInfo.add(queryInfo);
 			}
+
+			allChart.add(chart);
 		}
 
 		return allChart;
 	}
 
-	public Collection<Chart> collectValues() {
+	private Object getAttribute(ObjectName name, String attribute) {
+		try {
+			return mBeanServer.getAttribute(name, attribute);
+		} catch (AttributeNotFoundException e) {
+			// The attribute specified is not accessible in the MBean.
+			// This should never happen here.
 
+			throw new NotImplementedException("Error handling of AttributeNotFoundException");
+		} catch (InstanceNotFoundException e) {
+			// The MBean specified was unregistered in the MBean server.
+
+			throw new NotImplementedException("Error handling of InstanceNotFoundException");
+		} catch (MBeanException e) {
+			// Wraps an exception thrown by the MBean's getter.
+
+			throw new NotImplementedException("Error handling of MBeanException");
+		} catch (ReflectionException e) {
+			// Wraps a java.lang.Exception thrown when trying to invoke the
+			// setter.
+			// This should never happen. We only Query getter.
+
+			throw new NotImplementedException("Error handling of ReflectionException");
+		} catch (IOException e) {
+			// A communication problem occurred when talking to the MBean
+			// server.
+
+			throw new NotImplementedException("Error handling of IOException");
+		}
+	}
+
+	private long toLong(Object any) {
+		if (any instanceof Integer) {
+			return ((Integer) any).longValue();
+		} else if (any instanceof Double) {
+			double doubleValue = (double) any;
+			return (long) (doubleValue * this.LONG_RESOLUTION);
+		} else {
+			return (long) any;
+		}
+
+	}
+
+	public Collection<Chart> collectValues() {
 		// Step 1
 		// Query all attributes and fill charts.
 		for (MBeanQueryInfo queryInfo : allMBeanQueryInfo) {
 
-			try {
-				Object value = mBeanServer.getAttribute(queryInfo.name, queryInfo.attribute);
-
-				long longValue = 0L;
-
-				if (value instanceof Integer) {
-					longValue = ((Integer) value).longValue();
-				} else {
-					longValue = (long) value;
-				}
-
-				for (Dimension dim : queryInfo.dimensions) {
-					dim.setCurrentValue(longValue);
-				}
-			} catch (AttributeNotFoundException e) {
-				// The attribute specified is not accessible in the MBean.
-				// This should never happen here.
-
-				throw new NotImplementedException("Error handling of AttributeNotFoundException");
-			} catch (InstanceNotFoundException e) {
-				// The MBean specified was unregistered in the MBean server.
-
-				throw new NotImplementedException("Error handling of InstanceNotFoundException");
-			} catch (MBeanException e) {
-				// Wraps an exception thrown by the MBean's getter.
-
-				throw new NotImplementedException("Error handling of MBeanException");
-			} catch (ReflectionException e) {
-				// Wraps a java.lang.Exception thrown when trying to invoke the
-				// setter.
-				// This should never happen. We only Query getter.
-
-				throw new NotImplementedException("Error handling of ReflectionException");
-			} catch (IOException e) {
-				// A communication problem occurred when talking to the MBean
-				// server.
-
-				throw new NotImplementedException("Error handling of IOException");
+			long value = toLong(getAttribute(queryInfo.name, queryInfo.attribute));
+			for (Dimension dim : queryInfo.dimensions) {
+				dim.setCurrentValue(value);
 			}
-
 		}
 
 		// Return Updated Charts.
