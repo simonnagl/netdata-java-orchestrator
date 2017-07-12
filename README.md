@@ -1,5 +1,7 @@
 # Netdata Java Plugin Daemon
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=badger)
+
 A [netdata](https://github.com/firehol/netdata) Java plugin daemon.
 
 ## Java Plugins
