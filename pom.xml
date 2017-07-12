@@ -71,7 +71,7 @@
   					</execution>
   					<execution>
     					<id>jacoco-site</id>
-    					<phase>package</phase>
+    					<phase>post-integration-test</phase>
     					<goals>
       						<goal>report</goal>
     					</goals>
