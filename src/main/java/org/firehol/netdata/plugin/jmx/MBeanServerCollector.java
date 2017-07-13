@@ -1,5 +1,6 @@
 package org.firehol.netdata.plugin.jmx;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
 
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
@@ -24,7 +26,24 @@ import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
-public class MBeanServerCollector {
+public class MBeanServerCollector implements Closeable {
+
+	private final int LONG_RESOLUTION = 100;
+
+	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
+
+	private MBeanServerConnection mBeanServer;
+
+	private JMXConnector jmxConnector;
+
+	private List<MBeanQueryInfo> allMBeanQueryInfo = new LinkedList<>();
+
+	private List<Chart> allChart = new LinkedList<>();
+
+	/**
+	 * Name represented to the user.
+	 */
+	private String name;
 
 	@Getter
 	@Setter
@@ -34,24 +53,24 @@ public class MBeanServerCollector {
 		private List<Dimension> dimensions = new LinkedList<>();
 	}
 
-	private final int LONG_RESOLUTION = 100;
-
-	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
-
-	private MBeanServerConnection mBeanServer;
-
-	private List<MBeanQueryInfo> allMBeanQueryInfo = new LinkedList<>();
-
-	private List<Chart> allChart = new LinkedList<>();
-
 	/**
-	 * Name represented to the user.
+	 * Creates an MBeanServerCollector.
+	 * 
+	 * Only use this when you do not want to close the underlying JMXConnetor
+	 * when closing the generated MBeanServerCollector.
+	 * 
+	 * @param name
+	 *            presented at the submenu.
+	 * @param mBeanServer
 	 */
-	String name;
-
 	public MBeanServerCollector(String name, MBeanServerConnection mBeanServer) {
 		this.name = name;
 		this.mBeanServer = mBeanServer;
+	}
+
+	public MBeanServerCollector(String name, MBeanServerConnection mBeanServer, JMXConnector jmxConnector) {
+		this(name, mBeanServer);
+		this.jmxConnector = jmxConnector;
 	}
 
 	public MBeanServerConnection getmBeanServer() {
@@ -64,16 +83,7 @@ public class MBeanServerCollector {
 		// Step 1
 		// Check commonChart configuration
 		for (JmxChartConfiguration chartConfig : allChartConfig) {
-			Chart chart = new Chart();
-			chart.setType("Jmx");
-			chart.setFamily(name);
-			chart.setId(chartConfig.getId());
-			chart.setTitle(chartConfig.getTitle());
-			chart.setUnits(chartConfig.getUnits());
-			chart.setPriority(8000);
-			chart.setContext(name);
-			chart.setUpdateEvery(1);
-			chart.setChartType(chartConfig.getChartType());
+			Chart chart = initializeChart(chartConfig);
 
 			// Check if the mBeanServer has the desired sources.
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
@@ -119,6 +129,22 @@ public class MBeanServerCollector {
 		}
 
 		return allChart;
+	}
+
+	private Chart initializeChart(JmxChartConfiguration config) {
+		Chart chart = new Chart();
+
+		chart.setType("Jmx");
+		chart.setFamily(name);
+		chart.setId(config.getId());
+		chart.setTitle(config.getTitle());
+		chart.setUnits(config.getUnits());
+		chart.setPriority(8000);
+		chart.setContext(name);
+		chart.setUpdateEvery(1);
+		chart.setChartType(config.getChartType());
+
+		return chart;
 	}
 
 	private Object getAttribute(ObjectName name, String attribute) {
@@ -178,4 +204,15 @@ public class MBeanServerCollector {
 		return allChart;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.io.Closeable#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		if (this.jmxConnector != null) {
+			this.jmxConnector.close();
+		}
+	}
 }
