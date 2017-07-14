@@ -91,6 +91,7 @@ public class MBeanServerCollector implements Closeable {
 
 				Dimension dimension = initializeDimension(chartConfig, dimensionConfig, queryInfo.getType());
 				queryInfo.getDimensions().add(dimension);
+				chart.getAllDimension().add(dimension);
 			}
 
 			allChart.add(chart);
@@ -122,7 +123,7 @@ public class MBeanServerCollector implements Closeable {
 		dimension.setName(dimensionConfig.getName());
 		dimension.setAlgorithm(chartConfig.getDimType());
 		dimension.setMultiplier(dimensionConfig.getMultiplier());
-		dimension.setDivisor(dimensionConfig.getMultiplier());
+		dimension.setDivisor(dimensionConfig.getDivisor());
 
 		if (Double.class.isAssignableFrom(valueType)) {
 			dimension.setDivisor(dimension.getDivisor() * this.LONG_RESOLUTION);
