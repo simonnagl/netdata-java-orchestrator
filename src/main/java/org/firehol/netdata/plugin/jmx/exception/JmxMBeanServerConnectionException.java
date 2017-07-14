@@ -1,4 +1,4 @@
-package org.firehol.netdata.plugin.jmx;
+package org.firehol.netdata.plugin.jmx.exception;
 
 /**
  * Errors while initializing a connection to a JxmMBean Server.
