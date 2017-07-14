@@ -18,6 +18,15 @@ public class JmxDimensionConfiguration {
 	private String value;
 
 	/**
+	 * Multiply the collected value.
+	 */
+	private int multiplier = 1;
+	/**
+	 * Divide the collected value.
+	 */
+	private int divisor = 1;
+
+	/**
 	 * Name displayed to user.
 	 */
 	private String name;

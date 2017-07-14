@@ -3,6 +3,7 @@ package org.firehol.netdata.plugin.jmx;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,12 +20,10 @@ import javax.management.remote.JMXConnector;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.exception.InitializationException;
-import org.firehol.netdata.exception.NotImplementedException;
 import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
-
-import lombok.Getter;
-import lombok.Setter;
+import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.utils.LoggingUtils;
 
 public class MBeanServerCollector implements Closeable {
 
@@ -44,14 +43,6 @@ public class MBeanServerCollector implements Closeable {
 	 * Name represented to the user.
 	 */
 	private String name;
-
-	@Getter
-	@Setter
-	private class MBeanQueryInfo {
-		private ObjectName name;
-		private String attribute;
-		private List<Dimension> dimensions = new LinkedList<>();
-	}
 
 	/**
 	 * Creates an MBeanServerCollector.
@@ -87,42 +78,19 @@ public class MBeanServerCollector implements Closeable {
 
 			// Check if the mBeanServer has the desired sources.
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
-				ObjectName name = null;
-				try {
-					name = ObjectName.getInstance(dimensionConfig.getFrom());
-				} catch (MalformedObjectNameException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NullPointerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (name == null) {
-					// TODO: Proper error message
-					continue;
-				}
-
-				Object value = getAttribute(name, dimensionConfig.getValue());
-
-				Dimension dimension = new Dimension();
-				dimension.setId(dimensionConfig.getName());
-				dimension.setName(dimensionConfig.getName());
-				dimension.setAlgorithm(chartConfig.getDimType());
-				// dimension.setMultiplier();
-				// dimension.setDivisor();
-				if (value instanceof Double) {
-					dimension.setDivisor(this.LONG_RESOLUTION);
-				}
-
-				// Add to chart
-				chart.getAllDimension().add(dimension);
 
 				// Add to queryInfo
-				MBeanQueryInfo queryInfo = new MBeanQueryInfo();
-				queryInfo.setName(name);
-				queryInfo.setAttribute(dimensionConfig.getValue());
-				queryInfo.getDimensions().add(dimension);
+				MBeanQueryInfo queryInfo;
+				try {
+					queryInfo = initializeMBeanQueryInfo(dimensionConfig);
+				} catch (JmxMBeanServerQueryException e) {
+					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
+					continue;
+				}
 				allMBeanQueryInfo.add(queryInfo);
+
+				Dimension dimension = initializeDimension(chartConfig, dimensionConfig, queryInfo.getType());
+				queryInfo.getDimensions().add(dimension);
 			}
 
 			allChart.add(chart);
@@ -147,34 +115,54 @@ public class MBeanServerCollector implements Closeable {
 		return chart;
 	}
 
-	private Object getAttribute(ObjectName name, String attribute) {
+	private Dimension initializeDimension(JmxChartConfiguration chartConfig, JmxDimensionConfiguration dimensionConfig,
+			Class<?> valueType) {
+		Dimension dimension = new Dimension();
+		dimension.setId(dimensionConfig.getName());
+		dimension.setName(dimensionConfig.getName());
+		dimension.setAlgorithm(chartConfig.getDimType());
+		dimension.setMultiplier(dimensionConfig.getMultiplier());
+		dimension.setDivisor(dimensionConfig.getMultiplier());
+
+		if (Double.class.isAssignableFrom(valueType)) {
+			dimension.setDivisor(dimension.getDivisor() * this.LONG_RESOLUTION);
+		}
+
+		return dimension;
+	}
+
+	private MBeanQueryInfo initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
+			throws JmxMBeanServerQueryException {
+
+		// Query once to get dataType.
+		ObjectName name = null;
+		try {
+			name = ObjectName.getInstance(dimensionConfig.getFrom());
+		} catch (MalformedObjectNameException e) {
+			throw new JmxMBeanServerQueryException("'" + dimensionConfig.getFrom() + "' is no valid JMX ObjectName", e);
+		} catch (NullPointerException e) {
+			throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
+		}
+		Object value = getAttribute(name, dimensionConfig.getValue());
+
+		// Add to queryInfo
+		MBeanQueryInfo queryInfo = new MBeanQueryInfo();
+		queryInfo.setName(name);
+		queryInfo.setAttribute(dimensionConfig.getValue());
+		queryInfo.setType(value.getClass());
+
+		return queryInfo;
+	}
+
+	private Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
 		try {
 			return mBeanServer.getAttribute(name, attribute);
-		} catch (AttributeNotFoundException e) {
-			// The attribute specified is not accessible in the MBean.
-			// This should never happen here.
-
-			throw new NotImplementedException("Error handling of AttributeNotFoundException");
-		} catch (InstanceNotFoundException e) {
-			// The MBean specified was unregistered in the MBean server.
-
-			throw new NotImplementedException("Error handling of InstanceNotFoundException");
-		} catch (MBeanException e) {
-			// Wraps an exception thrown by the MBean's getter.
-
-			throw new NotImplementedException("Error handling of MBeanException");
-		} catch (ReflectionException e) {
-			// Wraps a java.lang.Exception thrown when trying to invoke the
-			// setter.
-			// This should never happen. We only Query getter.
-
-			throw new NotImplementedException("Error handling of ReflectionException");
-		} catch (IOException e) {
-			// A communication problem occurred when talking to the MBean
-			// server.
-
-			throw new NotImplementedException("Error handling of IOException");
+		} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException | ReflectionException
+				| IOException e) {
+			throw new JmxMBeanServerQueryException(
+					"Could not query attribute '" + attribute + "' of MBean '" + name + "'", e);
 		}
+
 	}
 
 	private long toLong(Object any) {
@@ -192,11 +180,22 @@ public class MBeanServerCollector implements Closeable {
 	public Collection<Chart> collectValues() {
 		// Step 1
 		// Query all attributes and fill charts.
-		for (MBeanQueryInfo queryInfo : allMBeanQueryInfo) {
+		Iterator<MBeanQueryInfo> queryInfoIterator = allMBeanQueryInfo.iterator();
 
-			long value = toLong(getAttribute(queryInfo.name, queryInfo.attribute));
-			for (Dimension dim : queryInfo.dimensions) {
-				dim.setCurrentValue(value);
+		while (queryInfoIterator.hasNext()) {
+			MBeanQueryInfo queryInfo = queryInfoIterator.next();
+
+			try {
+				long value = toLong(getAttribute(queryInfo.getName(), queryInfo.getAttribute()));
+				for (Dimension dim : queryInfo.getDimensions()) {
+					dim.setCurrentValue(value);
+				}
+			} catch (JmxMBeanServerQueryException e) {
+				// Stop collecting this value.
+				log.warning(LoggingUtils.buildMessage(
+						"Stop collection value '" + queryInfo.getAttribute() + "' of '" + queryInfo.getName() + "'.",
+						e));
+				queryInfoIterator.remove();
 			}
 		}
 

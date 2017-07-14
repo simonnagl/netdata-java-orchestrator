@@ -22,6 +22,7 @@ import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.plugin.AbstractPlugin;
 import org.firehol.netdata.plugin.jmx.configuration.JmxPluginConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerConnectionException;
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
