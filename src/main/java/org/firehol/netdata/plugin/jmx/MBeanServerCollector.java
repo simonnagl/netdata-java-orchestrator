@@ -25,12 +25,15 @@ import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.utils.LoggingUtils;
 
+import lombok.Getter;
+
 public class MBeanServerCollector implements Closeable {
 
 	private final int LONG_RESOLUTION = 100;
 
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
 
+	@Getter
 	private MBeanServerConnection mBeanServer;
 
 	private JMXConnector jmxConnector;
@@ -62,10 +65,6 @@ public class MBeanServerCollector implements Closeable {
 	public MBeanServerCollector(String name, MBeanServerConnection mBeanServer, JMXConnector jmxConnector) {
 		this(name, mBeanServer);
 		this.jmxConnector = jmxConnector;
-	}
-
-	public MBeanServerConnection getmBeanServer() {
-		return mBeanServer;
 	}
 
 	public Collection<Chart> initialize(Collection<JmxChartConfiguration> allChartConfig)
@@ -100,7 +99,7 @@ public class MBeanServerCollector implements Closeable {
 		return allChart;
 	}
 
-	private Chart initializeChart(JmxChartConfiguration config) {
+	protected Chart initializeChart(JmxChartConfiguration config) {
 		Chart chart = new Chart();
 
 		chart.setType("Jmx");
@@ -110,14 +109,13 @@ public class MBeanServerCollector implements Closeable {
 		chart.setUnits(config.getUnits());
 		chart.setPriority(8000);
 		chart.setContext(name);
-		chart.setUpdateEvery(1);
 		chart.setChartType(config.getChartType());
 
 		return chart;
 	}
 
-	private Dimension initializeDimension(JmxChartConfiguration chartConfig, JmxDimensionConfiguration dimensionConfig,
-			Class<?> valueType) {
+	protected Dimension initializeDimension(JmxChartConfiguration chartConfig,
+			JmxDimensionConfiguration dimensionConfig, Class<?> valueType) {
 		Dimension dimension = new Dimension();
 		dimension.setId(dimensionConfig.getName());
 		dimension.setName(dimensionConfig.getName());
@@ -132,7 +130,7 @@ public class MBeanServerCollector implements Closeable {
 		return dimension;
 	}
 
-	private MBeanQueryInfo initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
+	protected MBeanQueryInfo initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
 			throws JmxMBeanServerQueryException {
 
 		// Query once to get dataType.
@@ -155,7 +153,7 @@ public class MBeanServerCollector implements Closeable {
 		return queryInfo;
 	}
 
-	private Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
+	protected Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
 		try {
 			return mBeanServer.getAttribute(name, attribute);
 		} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException | ReflectionException
@@ -166,7 +164,7 @@ public class MBeanServerCollector implements Closeable {
 
 	}
 
-	private long toLong(Object any) {
+	protected long toLong(Object any) {
 		if (any instanceof Integer) {
 			return ((Integer) any).longValue();
 		} else if (any instanceof Double) {
@@ -179,7 +177,6 @@ public class MBeanServerCollector implements Closeable {
 	}
 
 	public Collection<Chart> collectValues() {
-		// Step 1
 		// Query all attributes and fill charts.
 		Iterator<MBeanQueryInfo> queryInfoIterator = allMBeanQueryInfo.iterator();
 

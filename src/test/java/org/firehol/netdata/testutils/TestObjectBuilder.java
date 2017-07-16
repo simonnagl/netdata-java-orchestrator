@@ -3,6 +3,8 @@ package org.firehol.netdata.testutils;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.ChartType;
 import org.firehol.netdata.entity.Dimension;
+import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 
 /**
  * Build standard Test Objects.
@@ -39,5 +41,21 @@ public abstract class TestObjectBuilder {
 		dim.setHidden(true);
 		dim.setCurrentValue(1L);
 		return dim;
+	}
+
+	public static JmxChartConfiguration buildJmxChartConfiguration() {
+		JmxChartConfiguration chartConfig = new JmxChartConfiguration();
+		chartConfig.setId("id");
+		chartConfig.setTitle("title");
+		chartConfig.setUnits("units");
+		return chartConfig;
+	}
+
+	public static JmxDimensionConfiguration buildJmxDimensionConfiguration() {
+		JmxDimensionConfiguration dimensionConfig = new JmxDimensionConfiguration();
+		dimensionConfig.setFrom("from");
+		dimensionConfig.setValue("value");
+		dimensionConfig.setName("name");
+		return dimensionConfig;
 	}
 }
