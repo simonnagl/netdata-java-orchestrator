@@ -19,6 +19,10 @@ Netdata Java Plugin Daemon ues the following third party software in its distrib
     Copyright © 2002-2017 JUnit.
     [Eclipse Public License - v 1.0](http://www.eclipse.org/legal/epl-v10.html)
 
+- [Mockito](http://site.mockito.org)
+
+    [MIT License](https://github.com/mockito/mockito/blob/master/LICENSE)
+
 - [Lombok](https://projectlombok.org)
 
     Copyright © 2009-2017 The Project Lombok Authors

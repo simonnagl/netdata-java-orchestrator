@@ -75,7 +75,7 @@ public class JmxPlugin extends AbstractPlugin<JmxPluginConfiguration> {
 				// configuration.
 				allChart.addAll(mBeanCollector.initialize(getConfiguration().getCommonCharts()));
 			} catch (InitializationException e) {
-				log.warning("Could not initialize JMX plugin " + mBeanCollector.getmBeanServer().toString());
+				log.warning("Could not initialize JMX plugin " + mBeanCollector.getMBeanServer().toString());
 				ResourceUtils.close(mBeanCollector);
 				mBeanCollectorIterator.remove();
 			}
