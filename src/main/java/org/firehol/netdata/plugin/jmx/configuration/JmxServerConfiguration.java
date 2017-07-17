@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JmxServerConfiguration {
-	int port;
-	String name;
+	private int port;
+	private String name;
 }
