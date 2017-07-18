@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -26,6 +25,7 @@ import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
+import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
 import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.testutils.ReflectionUtils;
 import org.firehol.netdata.testutils.TestObjectBuilder;
@@ -48,38 +48,25 @@ public class MBeanServerCollectorTest {
 	private MBeanServerConnection mBeanServer;
 
 	@Test
-	public void testMBeanServerCollectorStringMBeanServerConnection()
-			throws NoSuchFieldException, IllegalAccessException, SecurityException {
-		// Static Objects
-		String name = "test";
-		MBeanServerConnection mBeanServer = ManagementFactory.getPlatformMBeanServer();
-
-		// Test
-		MBeanServerCollector collector = new MBeanServerCollector(name, mBeanServer);
-
-		// Verify
-		assertEquals(name, ReflectionUtils.getPrivateField(collector, "name"));
-		assertEquals(mBeanServer, ReflectionUtils.getPrivateField(collector, "mBeanServer"));
-	}
-
-	@Test
 	public void testInitializeChart() throws NoSuchFieldException, IllegalAccessException, SecurityException {
 		// Static Objects
 		JmxChartConfiguration config = TestObjectBuilder.buildJmxChartConfiguration();
+		JmxServerConfiguration serverConfig = new JmxServerConfiguration();
+		String serverName = "TestServer";
+		serverConfig.setName(serverName);
+		ReflectionUtils.setPrivateFiled(mBeanServerCollector, "serverConfiguration", serverConfig);
 
 		// Test
 		Chart chart = mBeanServerCollector.initializeChart(config);
 
 		// Verify
-		String mBeanServerCollectorName = (String) ReflectionUtils.getPrivateField(mBeanServerCollector, "name");
-
 		assertEquals("Jmx", chart.getType());
 		assertEquals("id", chart.getId());
 		assertNull(chart.getName());
 		assertEquals("title", chart.getTitle());
 		assertEquals("units", config.getUnits());
-		assertEquals(mBeanServerCollectorName, chart.getFamily());
-		assertEquals(mBeanServerCollectorName, chart.getContext());
+		assertEquals(serverName, chart.getFamily());
+		assertEquals(serverName, chart.getContext());
 		assertEquals(ChartType.LINE, chart.getChartType());
 		// TODO: This should be dynamic.
 		assertEquals(8000, chart.getPriority());

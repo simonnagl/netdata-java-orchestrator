@@ -22,6 +22,10 @@ Netdata Java Plugin Daemon ues the following third party software in its distrib
 - [Mockito](http://site.mockito.org)
 
     [MIT License](https://github.com/mockito/mockito/blob/master/LICENSE)
+    
+- [System Rules](http://stefanbirkner.github.io/system-rules/index.html)
+ 
+	[Common Public License 1.0](http://stefanbirkner.github.io/system-rules/license.html) 
 
 - [Lombok](https://projectlombok.org)
 
