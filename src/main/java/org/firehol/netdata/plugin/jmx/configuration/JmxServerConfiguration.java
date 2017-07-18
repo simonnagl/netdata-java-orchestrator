@@ -1,5 +1,7 @@
 package org.firehol.netdata.plugin.jmx.configuration;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,4 +10,6 @@ import lombok.Setter;
 public class JmxServerConfiguration {
 	private int port;
 	private String name;
+	
+	private List<JmxChartConfiguration> charts;
 }

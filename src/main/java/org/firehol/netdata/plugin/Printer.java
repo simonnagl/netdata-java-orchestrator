@@ -3,10 +3,19 @@ package org.firehol.netdata.plugin;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 
+/**
+ * The class {@code Printer} contains methods to communicate with the caller.
+ * 
+ * The format of the communication is defined <a href="https://github.com/firehol/netdata/wiki/External-Plugins#netdata-plugins">here</a> 
+ * 
+ * @author Simon Nagl
+ * @since 1.0.0
+ * @
+ */
 public final class Printer {
 
 	/**
-	 * Do not let anyone instantiate this class.
+     * Don't let anyone instantiate this class.
 	 */
 	private Printer() {
 	}

@@ -9,4 +9,6 @@ public interface Collector {
 	 Collection<Chart> initialize() throws InitializationException;
 	 
 	 Collection<Chart> collectValues();
+	 
+	 void cleanup();
 }
