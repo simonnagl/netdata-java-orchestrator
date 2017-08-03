@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2017 Simon Nagl
+ *
+ * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.firehol.netdata.plugin.jmx;
 
 import java.io.IOException;
@@ -52,12 +70,13 @@ public class JmxPlugin implements Collector {
 
 		// Propagate Common Charts to Server configurations.
 		for (JmxServerConfiguration serverConfiguartion : configuration.getJmxServers()) {
-			Map<String, JmxChartConfiguration> chartConfigById = chartConfigurationsById(serverConfiguartion.getCharts());
-			
-			for(JmxChartConfiguration chartConfig : configuration.getCommonCharts()) {
+			Map<String, JmxChartConfiguration> chartConfigById = chartConfigurationsById(
+					serverConfiguartion.getCharts());
+
+			for (JmxChartConfiguration chartConfig : configuration.getCommonCharts()) {
 				chartConfigById.putIfAbsent(chartConfig.getId(), chartConfig);
 			}
-			
+
 			List<JmxChartConfiguration> chartConfigs = chartConfigById.values().stream().collect(Collectors.toList());
 			serverConfiguartion.setCharts(chartConfigs);
 		}
@@ -79,7 +98,7 @@ public class JmxPlugin implements Collector {
 		JmxServerConfiguration localConfiguration = new JmxServerConfiguration();
 		localConfiguration.setCharts(configuration.getCommonCharts());
 		localConfiguration.setName("NetdataJavaDaemon");
-		
+
 		MBeanServerCollector collector = new MBeanServerCollector(localConfiguration,
 				ManagementFactory.getPlatformMBeanServer());
 		allMBeanCollector.add(collector);
@@ -120,7 +139,8 @@ public class JmxPlugin implements Collector {
 			if (connection != null) {
 				ResourceUtils.close(connection);
 			}
-			throw new JmxMBeanServerConnectionException("Faild to connect to JMX Server at port " + config.getPort() + ".", e);
+			throw new JmxMBeanServerConnectionException(
+					"Faild to connect to JMX Server at port " + config.getPort() + ".", e);
 		}
 	}
 
