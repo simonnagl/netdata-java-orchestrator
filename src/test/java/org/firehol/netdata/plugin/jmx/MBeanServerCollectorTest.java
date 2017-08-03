@@ -86,9 +86,26 @@ public class MBeanServerCollectorTest {
 		assertEquals(serverName, chart.getFamily());
 		assertEquals(serverName, chart.getContext());
 		assertEquals(ChartType.LINE, chart.getChartType());
-		// TODO: This should be dynamic.
-		assertEquals(8000, chart.getPriority());
+		assertEquals(1000, chart.getPriority());
 		assertNull(chart.getUpdateEvery());
+	}
+
+	@Test
+	public void testInitializeChartDynamicPriority()
+			throws NoSuchFieldException, IllegalAccessException, SecurityException {
+		// Static Objects
+		JmxChartConfiguration config = TestObjectBuilder.buildJmxChartConfiguration();
+		config.setPriority(1);
+		JmxServerConfiguration serverConfig = new JmxServerConfiguration();
+		String serverName = "TestServer";
+		serverConfig.setName(serverName);
+		ReflectionUtils.setPrivateFiled(mBeanServerCollector, "serverConfiguration", serverConfig);
+
+		// Test
+		Chart chart = mBeanServerCollector.initializeChart(config);
+
+		// Verify
+		assertEquals(1, chart.getPriority());
 	}
 
 	@Test

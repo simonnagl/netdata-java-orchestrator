@@ -33,6 +33,7 @@ public class JmxChartConfiguration {
 	private String id;
 	private String title;
 	private String units;
+	private Integer priority;
 	private ChartType chartType = ChartType.LINE;
 
 	private DimensionAlgorithm dimType = DimensionAlgorithm.ABSOLUTE;
