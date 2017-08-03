@@ -28,6 +28,7 @@ import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeIns
 import org.firehol.netdata.utils.LoggingUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +42,7 @@ import lombok.Getter;
 public final class ConfigurationService {
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.configuration");
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper;
 
 	private EnvironmentConfigurationService environmentConfigurationService = EnvironmentConfigurationService
 			.getInstance();
@@ -61,6 +62,14 @@ public final class ConfigurationService {
 		} catch (ConfigurationSchemeInstantiationException e) {
 			Main.exit(LoggingUtils.buildMessage("Could not initialize ConfigurationService", e));
 		}
+
+		log.fine("Initialize object mapper for reading configuration files.");
+		mapper = new ObjectMapper();
+		configureObjectMapper(mapper);
+	}
+
+	private void configureObjectMapper(ObjectMapper mapper) {
+		mapper.enable(Feature.ALLOW_COMMENTS);
 	}
 
 	/**

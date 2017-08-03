@@ -19,6 +19,12 @@ cp -r config/* /your/netdata/config/dir
 cp target/java-daemon-0.1.0-SNAPSHOT.jar /tmp
 ```
 
+## Configuration
+
+Configuration files contain JSON Objects.
+Additional to the JSON specification Java/C++ style comments (both '/'+'*' and '//' varieties) are allowed.
+
+
 ## License
 
 netdata-plugin-java-daemon is [GPLv3+](LICENSE).

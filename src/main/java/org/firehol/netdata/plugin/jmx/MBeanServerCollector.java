@@ -124,9 +124,11 @@ public class MBeanServerCollector implements Collector, Closeable {
 		chart.setId(config.getId());
 		chart.setTitle(config.getTitle());
 		chart.setUnits(config.getUnits());
-		chart.setPriority(8000);
 		chart.setContext(serverConfiguration.getName());
 		chart.setChartType(config.getChartType());
+		if (config.getPriority() != null) {
+			chart.setPriority(config.getPriority());
+		}
 
 		return chart;
 	}
