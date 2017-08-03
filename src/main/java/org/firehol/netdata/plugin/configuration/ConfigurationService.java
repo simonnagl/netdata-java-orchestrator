@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2017 Simon Nagl
+ *
+ * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.firehol.netdata.plugin.configuration;
 
 import java.io.File;
@@ -25,7 +43,8 @@ public final class ConfigurationService {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	private EnvironmentConfigurationService environmentConfigurationService = EnvironmentConfigurationService.getInstance();
+	private EnvironmentConfigurationService environmentConfigurationService = EnvironmentConfigurationService
+			.getInstance();
 
 	@Getter
 	private PluginDaemonConfiguration globalConfiguration;
@@ -71,20 +90,21 @@ public final class ConfigurationService {
 	 */
 	protected <T> T readConfiguration(File file, Class<T> clazz) throws ConfigurationSchemeInstantiationException {
 		T configuration = null;
-	
+
 		try {
 			configuration = mapper.readValue(file, clazz);
 		} catch (JsonParseException | JsonMappingException e) {
 			log.warning(LoggingUtils.buildMessage("Could not read malformed configuration file.", e));
 		} catch (IOException e) {
-			log.warning(LoggingUtils.buildMessage("Could not read configuration file '" + file.getAbsolutePath() + "'.", e));
+			log.warning(LoggingUtils.buildMessage("Could not read configuration file '" + file.getAbsolutePath() + "'.",
+					e));
 		} finally {
 			if (configuration == null) {
 				try {
 					configuration = clazz.newInstance();
 				} catch (InstantiationException | IllegalAccessException e) {
 					throw new ConfigurationSchemeInstantiationException("Could not instancize default Configuration.");
-				} 
+				}
 			}
 		}
 		return configuration;
@@ -99,7 +119,8 @@ public final class ConfigurationService {
 		return globalConfig;
 	}
 
-	public <T> T readPluginConfiguration(String pluginName, Class<T> clazz) throws ConfigurationSchemeInstantiationException {
+	public <T> T readPluginConfiguration(String pluginName, Class<T> clazz)
+			throws ConfigurationSchemeInstantiationException {
 		Path configDir = environmentConfigurationService.getConfigDir().resolve("java.d");
 		Path configFile = configDir.resolve(pluginName + ".conf");
 
