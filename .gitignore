@@ -13,3 +13,7 @@ hs_err_pid*
 
 # Maven
 target/
+
+# netdata-plugin-java-daemon-installer.sh
+netdata-plugin-java-daemon-installer.log
+netdata-plugin-java-daemon-uninstaller.sh
