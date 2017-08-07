@@ -52,7 +52,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.firehol.netdata.plugin.PluginDaemon</mainClass>
+							<mainClass>org.firehol.netdata.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
