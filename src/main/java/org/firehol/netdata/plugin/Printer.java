@@ -24,16 +24,16 @@ import org.firehol.netdata.entity.Dimension;
 /**
  * The class {@code Printer} contains methods to communicate with the caller.
  * 
- * The format of the communication is defined <a href="https://github.com/firehol/netdata/wiki/External-Plugins#netdata-plugins">here</a> 
+ * The format of the communication is defined <a href=
+ * "https://github.com/firehol/netdata/wiki/External-Plugins#netdata-plugins">here</a>
  * 
  * @author Simon Nagl
  * @since 1.0.0
- * @
  */
 public final class Printer {
 
 	/**
-     * Don't let anyone instantiate this class.
+	 * Don't let anyone instantiate this class.
 	 */
 	private Printer() {
 	}
@@ -172,8 +172,8 @@ public final class Printer {
 	}
 
 	/**
-	 * Tell the caller to disable the plugin. This will prevent it from
-	 * restarting the plugin.
+	 * Tell the caller to disable the plugin. This will prevent it from restarting
+	 * the plugin.
 	 */
 	public static void disable() {
 		print("DISABLE");

@@ -88,7 +88,7 @@ public class MBeanServerCollectorTest {
 		assertEquals(ChartType.LINE, chart.getChartType());
 		// TODO: This should be dynamic.
 		assertEquals(8000, chart.getPriority());
-		assertEquals(-1, chart.getUpdateEvery());
+		assertNull(chart.getUpdateEvery());
 	}
 
 	@Test
