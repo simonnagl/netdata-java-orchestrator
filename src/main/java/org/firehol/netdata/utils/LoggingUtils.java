@@ -18,9 +18,12 @@
 
 package org.firehol.netdata.utils;
 
+import java.util.function.Supplier;
+
 public abstract class LoggingUtils {
 
 	private static void appendMessage(Throwable reason, StringBuilder sb) {
+
 		sb.append(reason.getMessage());
 
 		Throwable detail = reason.getCause();
@@ -39,8 +42,27 @@ public abstract class LoggingUtils {
 
 	public static String buildMessage(String message, Throwable reason) {
 		StringBuilder sb = new StringBuilder(message);
+
 		sb.append(" Reason: ");
 		appendMessage(reason, sb);
 		return sb.toString();
+	}
+
+	public static Supplier<String> getMessageSupplier(Throwable reason) {
+		return new Supplier<String>() {
+			@Override
+			public String get() {
+				return buildMessage(reason);
+			}
+		};
+	}
+
+	public static Supplier<String> getMessageSupplier(String message, Throwable reason) {
+		return new Supplier<String>() {
+			@Override
+			public String get() {
+				return buildMessage(message, reason);
+			}
+		};
 	}
 }
