@@ -111,6 +111,7 @@ public final class ConfigurationService {
 			if (configuration == null) {
 				try {
 					configuration = clazz.newInstance();
+					return configuration;
 				} catch (InstantiationException | IllegalAccessException e) {
 					throw new ConfigurationSchemeInstantiationException("Could not instancize default Configuration.");
 				}
