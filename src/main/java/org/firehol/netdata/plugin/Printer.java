@@ -74,10 +74,10 @@ public final class Printer {
 		} else {
 			sb.append("null");
 		}
-		sb.append(' ');
+		sb.append(" '");
 		// Append title
 		sb.append(chart.getTitle());
-		sb.append(' ');
+		sb.append("' ");
 		// Append untis
 		sb.append(chart.getUnits());
 		sb.append(' ');

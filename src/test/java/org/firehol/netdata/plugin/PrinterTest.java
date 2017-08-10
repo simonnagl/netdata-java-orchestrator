@@ -38,7 +38,7 @@ public class PrinterTest {
 		Printer.appendInitializeChart(sb, chart);
 
 		// Verify
-		assertEquals("CHART type.id name title units family context line 1000", sb.toString());
+		assertEquals("CHART type.id name 'title' units family context line 1000", sb.toString());
 	}
 
 	@Test
