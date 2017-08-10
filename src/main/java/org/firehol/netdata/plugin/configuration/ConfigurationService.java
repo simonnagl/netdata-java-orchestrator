@@ -19,7 +19,6 @@
 package org.firehol.netdata.plugin.configuration;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -100,23 +99,26 @@ public final class ConfigurationService {
 	protected <T> T readConfiguration(File file, Class<T> clazz) throws ConfigurationSchemeInstantiationException {
 		T configuration = null;
 
+		// First try to read the value.
 		try {
 			configuration = mapper.readValue(file, clazz);
 		} catch (JsonParseException | JsonMappingException e) {
-			log.warning(LoggingUtils.buildMessage("Could not read malformed configuration file.", e));
-		} catch (IOException e) {
-			log.warning(LoggingUtils.buildMessage("Could not read configuration file '" + file.getAbsolutePath() + "'.",
-					e));
-		} finally {
-			if (configuration == null) {
-				try {
-					configuration = clazz.newInstance();
-					return configuration;
-				} catch (InstantiationException | IllegalAccessException e) {
-					throw new ConfigurationSchemeInstantiationException("Could not instancize default Configuration.");
-				}
+			log.warning(LoggingUtils.getMessageSupplier("Could not read malformed configuration file.", e));
+		} catch (Exception e) {
+			log.warning(LoggingUtils
+					.getMessageSupplier("Could not read configuration file '" + file.getAbsolutePath() + "'.", e));
+		}
+
+		// If we still have no configuration try to read the default one.
+		if (configuration == null) {
+			try {
+				configuration = clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new ConfigurationSchemeInstantiationException(
+						"Could not instanciate default configuration for class " + clazz.getName() + ".");
 			}
 		}
+
 		return configuration;
 	}
 
