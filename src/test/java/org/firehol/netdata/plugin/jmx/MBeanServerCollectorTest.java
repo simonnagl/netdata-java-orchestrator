@@ -79,7 +79,7 @@ public class MBeanServerCollectorTest {
 
 		// Verify
 		assertEquals("Jmx", chart.getType());
-		assertEquals("id", chart.getId());
+		assertEquals("TestServerid", chart.getId());
 		assertNull(chart.getName());
 		assertEquals("title", chart.getTitle());
 		assertEquals("units", config.getUnits());

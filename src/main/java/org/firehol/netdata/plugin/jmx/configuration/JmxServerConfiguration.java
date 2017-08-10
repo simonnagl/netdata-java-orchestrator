@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JmxServerConfiguration {
-	private int port;
+	private String serviceUrl;
 	private String name;
 
 	private List<JmxChartConfiguration> charts;
