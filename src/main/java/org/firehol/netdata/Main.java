@@ -47,7 +47,7 @@ public final class Main {
 	 */
 	private Main() {
 	}
-	
+
 	/**
 	 * Exit the process.
 	 * 
@@ -72,7 +72,8 @@ public final class Main {
 	 * Exit the program if it could not be parsed.
 	 * 
 	 * @param commandLineParameter
-	 * @return
+	 *            updateEvery part from the command line
+	 * @return parsed update interval in seconds
 	 */
 	protected static long getUpdateEveryFailFast(String commandLineParameter) {
 		try {
@@ -91,6 +92,10 @@ public final class Main {
 	 */
 	public static void main(final String[] args) {
 		log.fine("Read command line options.");
+
+		if (args.length < 1) {
+			exit("Can't find a command line parameter. Expected one which configures the update interval in seconds.");
+		}
 		long updateEverySec = getUpdateEveryFailFast(args[0]);
 
 		// Create plugins
@@ -118,7 +123,7 @@ public final class Main {
 		AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
 		while (true) {
 			timeService.alignToNextInterval();
-			
+
 			// Collect values and print them.
 			jmxPlugin.collectValues().stream().forEach(Printer::collect);
 		}
