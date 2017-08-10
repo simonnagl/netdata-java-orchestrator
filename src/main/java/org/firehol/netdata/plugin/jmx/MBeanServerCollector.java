@@ -121,7 +121,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 		chart.setType("Jmx");
 		chart.setFamily(serverConfiguration.getName());
-		chart.setId(config.getId());
+		chart.setId(serverConfiguration.getName() + config.getId());
 		chart.setTitle(config.getTitle());
 		chart.setUnits(config.getUnits());
 		chart.setContext(serverConfiguration.getName());

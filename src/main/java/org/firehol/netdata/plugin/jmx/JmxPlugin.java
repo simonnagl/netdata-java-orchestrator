@@ -70,6 +70,11 @@ public class JmxPlugin implements Collector {
 
 		// Propagate Common Charts to Server configurations.
 		for (JmxServerConfiguration serverConfiguartion : configuration.getJmxServers()) {
+			if (serverConfiguartion.getCharts() == null) {
+				serverConfiguartion.setCharts(configuration.getCommonCharts());
+				continue;
+			}
+
 			Map<String, JmxChartConfiguration> chartConfigById = chartConfigurationsById(
 					serverConfiguartion.getCharts());
 
@@ -130,7 +135,7 @@ public class JmxPlugin implements Collector {
 			throws JmxMBeanServerConnectionException {
 		JMXConnector connection = null;
 		try {
-			JMXServiceURL url = new JMXServiceURL(null, null, config.getPort());
+			JMXServiceURL url = new JMXServiceURL(config.getServiceUrl());
 			connection = JMXConnectorFactory.connect(url);
 			MBeanServerConnection server = connection.getMBeanServerConnection();
 			MBeanServerCollector collector = new MBeanServerCollector(config, server, connection);
@@ -140,7 +145,7 @@ public class JmxPlugin implements Collector {
 				ResourceUtils.close(connection);
 			}
 			throw new JmxMBeanServerConnectionException(
-					"Faild to connect to JMX Server at port " + config.getPort() + ".", e);
+					"Faild to connect to JMX Server " + config.getServiceUrl() + ".", e);
 		}
 	}
 
