@@ -78,12 +78,12 @@ public class MBeanServerCollectorTest {
 		Chart chart = mBeanServerCollector.initializeChart(config);
 
 		// Verify
-		assertEquals("Jmx", chart.getType());
-		assertEquals("TestServerid", chart.getId());
+		assertEquals("jmx_TestServer", chart.getType());
+		assertEquals("id", chart.getId());
 		assertNull(chart.getName());
 		assertEquals("title", chart.getTitle());
 		assertEquals("units", config.getUnits());
-		assertEquals(serverName, chart.getFamily());
+		assertEquals("subsection", chart.getFamily());
 		assertEquals(serverName, chart.getContext());
 		assertEquals(ChartType.LINE, chart.getChartType());
 		assertEquals(1000, chart.getPriority());

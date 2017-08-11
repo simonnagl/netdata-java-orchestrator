@@ -32,6 +32,7 @@ import lombok.Setter;
 public class JmxChartConfiguration {
 	private String id;
 	private String title;
+	private String subsection;
 	private String units;
 	private Integer priority;
 	private ChartType chartType = ChartType.LINE;
