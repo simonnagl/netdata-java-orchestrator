@@ -65,6 +65,7 @@ public abstract class TestObjectBuilder {
 		JmxChartConfiguration chartConfig = new JmxChartConfiguration();
 		chartConfig.setId("id");
 		chartConfig.setTitle("title");
+		chartConfig.setSubsection("subsection");
 		chartConfig.setUnits("units");
 		return chartConfig;
 	}

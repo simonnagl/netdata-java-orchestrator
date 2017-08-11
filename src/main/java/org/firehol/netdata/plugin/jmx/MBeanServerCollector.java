@@ -119,9 +119,9 @@ public class MBeanServerCollector implements Collector, Closeable {
 	protected Chart initializeChart(JmxChartConfiguration config) {
 		Chart chart = new Chart();
 
-		chart.setType("Jmx");
-		chart.setFamily(serverConfiguration.getName());
-		chart.setId(serverConfiguration.getName() + config.getId());
+		chart.setType("jmx_" + serverConfiguration.getName());
+		chart.setFamily(config.getSubsection());
+		chart.setId(config.getId());
 		chart.setTitle(config.getTitle());
 		chart.setUnits(config.getUnits());
 		chart.setContext(serverConfiguration.getName());
