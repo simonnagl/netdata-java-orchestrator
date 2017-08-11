@@ -31,10 +31,21 @@ public class AlignToTimeIntervalService {
 	private long intervalInNSec;
 	private long lastTimestamp;
 
+	/**
+	 * Construct a new {@code AlignToTimeIntervalService} with an interval of
+	 * {@code intervalInNSec} nanoseconds.
+	 * 
+	 * @param intervalInNSec
+	 *            Interval to align to in seconds.
+	 */
 	public AlignToTimeIntervalService(long intervalInNSec) {
 		this.intervalInNSec = intervalInNSec;
+		this.lastTimestamp = ClockService.nowMonotonicNSec();
 	}
 
+	/**
+	 * @return
+	 */
 	public long alignToNextInterval() {
 		long now = ClockService.nowMonotonicNSec();
 		long next = now - (now % intervalInNSec) + intervalInNSec;
