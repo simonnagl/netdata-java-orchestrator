@@ -66,6 +66,51 @@ public class PrinterTest {
 	}
 
 	@Test
+	public void testAppendInitializeChartNoName() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		chart.setName(null);
+		StringBuilder sb = new StringBuilder();
+
+		// Test
+		Printer.appendInitializeChart(sb, chart);
+
+		// Verify
+		assertEquals("CHART type.id null 'title' units family context line 1000", sb.toString());
+	}
+
+	@Test
+	public void testAppendInitializeChartNoFamily() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		chart.setFamily(null);
+		StringBuilder sb = new StringBuilder();
+
+		// Test
+		Printer.appendInitializeChart(sb, chart);
+
+		// Verify
+		assertEquals("CHART type.id name 'title' units id context line 1000", sb.toString());
+	}
+
+	@Test
+	public void testAppendInitializeChartNoContext() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		chart.setContext(null);
+		StringBuilder sb = new StringBuilder();
+
+		// Test
+		Printer.appendInitializeChart(sb, chart);
+
+		// Verify
+		assertEquals("CHART type.id name 'title' units family id line 1000", sb.toString());
+	}
+
+	@Test
 	public void testAppendInitializeDimension() {
 
 		// Static Objects
@@ -77,6 +122,36 @@ public class PrinterTest {
 
 		// Verify
 		assertEquals("DIMENSION id name absolute 1 1 hidden", sb.toString());
+	}
+
+	@Test
+	public void testAppendInitializeDimensionNotHidden() {
+
+		// Static Objects
+		Dimension dimension = TestObjectBuilder.buildDimension();
+		dimension.setHidden(false);
+		StringBuilder sb = new StringBuilder();
+
+		// Test
+		Printer.appendInitializeDimension(sb, dimension);
+
+		// Verify
+		assertEquals("DIMENSION id name absolute 1 1", sb.toString());
+	}
+
+	@Test
+	public void testAppendInitializeDimensionNoName() {
+
+		// Static Objects
+		Dimension dimension = TestObjectBuilder.buildDimension();
+		dimension.setName(null);
+		StringBuilder sb = new StringBuilder();
+
+		// Test
+		Printer.appendInitializeDimension(sb, dimension);
+
+		// Verify
+		assertEquals("DIMENSION id id absolute 1 1 hidden", sb.toString());
 	}
 
 	@Test
@@ -93,6 +168,24 @@ public class PrinterTest {
 
 		// Verify
 		assertEquals("BEGIN type.id\nSET id = 1\nEND\n", systemOutRule.getLog());
+		// collect should delete currentValue after printing.
+		assertNull(dim.getCurrentValue());
+	}
+
+	@Test
+	public void testCollectNoValue() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		Dimension dim = TestObjectBuilder.buildDimension();
+		dim.setCurrentValue(null);
+		chart.getAllDimension().add(dim);
+
+		// Test
+		Printer.collect(chart);
+
+		// Verify
+		assertEquals("BEGIN type.id\nEND\n", systemOutRule.getLog());
 		// collect should delete currentValue after printing.
 		assertNull(dim.getCurrentValue());
 	}
