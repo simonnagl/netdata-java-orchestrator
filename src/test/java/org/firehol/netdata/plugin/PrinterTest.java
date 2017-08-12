@@ -19,13 +19,37 @@
 package org.firehol.netdata.plugin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.testutils.TestObjectBuilder;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public class PrinterTest {
+
+	@Rule
+	public final SystemOutRule systemOutRule = new SystemOutRule().enableLog().muteForSuccessfulTests();
+
+	@Test
+	public void testInitializeChart() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		chart.setUpdateEvery(1);
+		Dimension dim = TestObjectBuilder.buildDimension();
+		chart.getAllDimension().add(dim);
+
+		// Test
+		Printer.initializeChart(chart);
+
+		// Verify
+		assertEquals(
+				"CHART type.id name 'title' units family context line 1000 1\nDIMENSION id name absolute 1 1 hidden\n",
+				systemOutRule.getLog());
+	}
 
 	@Test
 	public void testAppendInitializeChart() {
@@ -53,6 +77,24 @@ public class PrinterTest {
 
 		// Verify
 		assertEquals("DIMENSION id name absolute 1 1 hidden", sb.toString());
+	}
+
+	@Test
+	public void testCollect() {
+
+		// Static Objects
+		Chart chart = TestObjectBuilder.buildChart();
+		Dimension dim = TestObjectBuilder.buildDimension();
+		dim.setCurrentValue(1L);
+		chart.getAllDimension().add(dim);
+
+		// Test
+		Printer.collect(chart);
+
+		// Verify
+		assertEquals("BEGIN type.id\nSET id = 1\nEND\n", systemOutRule.getLog());
+		// collect should delete currentValue after printing.
+		assertNull(dim.getCurrentValue());
 	}
 
 	@Test
@@ -93,6 +135,15 @@ public class PrinterTest {
 
 		// Verify
 		assertEquals("END", sb.toString());
+	}
+
+	@Test
+	public void testDisable() {
+		// Test
+		Printer.disable();
+
+		// Verify
+		assertEquals("DISABLE\n", systemOutRule.getLog());
 	}
 
 }
