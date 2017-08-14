@@ -243,7 +243,7 @@ NETDATA_CONFIG_DIR="${NETDATA_PREFIX}/etc/netdata/"
 
 # Copy plugin configuration files if not present.
 [ -d "${NETDATA_CONFIG_DIR}/java.d" ] || run mkdir -p "${NETDATA_CONFIG_DIR}/java.d"
-for filename in `ls config/java.d` 
+for filename in $(ls config/java.d)
 do
     [ -f "${NETDATA_CONFIG_DIR}/java.d/${filename}" ] || run cp "config/java.d/${filename}" "${NETDATA_CONFIG_DIR}/java.d/"
 done
