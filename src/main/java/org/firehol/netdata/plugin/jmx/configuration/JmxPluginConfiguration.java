@@ -24,6 +24,12 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Configuration scheme to configure
+ * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}
+ * 
+ * @author Simon Nagl
+ */
 @Getter
 @Setter
 public class JmxPluginConfiguration {

@@ -21,6 +21,13 @@ package org.firehol.netdata.plugin.jmx.configuration;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Configuration scheme of a dimension of a chart created by the
+ * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}.
+ * 
+ * @since 1.0.0
+ * @author Simon Nagl
+ */
 @Getter
 @Setter
 public class JmxDimensionConfiguration {
@@ -36,11 +43,11 @@ public class JmxDimensionConfiguration {
 	private String value;
 
 	/**
-	 * Multiply the collected value.
+	 * Multiply the collected value before displaying it.
 	 */
 	private int multiplier = 1;
 	/**
-	 * Divide the collected value.
+	 * Divide the collected value before displaying it.
 	 */
 	private int divisor = 1;
 
@@ -49,5 +56,8 @@ public class JmxDimensionConfiguration {
 	 */
 	private String name;
 
+	/**
+	 * If true the value get's collected but not displayed.
+	 */
 	private boolean hidden = false;
 }

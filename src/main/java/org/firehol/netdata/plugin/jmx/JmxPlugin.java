@@ -190,7 +190,9 @@ public class JmxPlugin implements Collector {
 
 	protected MBeanServerCollector buildMBeanServerCollector(JmxServerConfiguration config)
 			throws JmxMBeanServerConnectionException {
+
 		JMXConnector connection = null;
+
 		try {
 			JMXServiceURL url = new JMXServiceURL(config.getServiceUrl());
 			connection = JMXConnectorFactory.connect(url);

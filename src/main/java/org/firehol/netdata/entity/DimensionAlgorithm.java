@@ -18,6 +18,12 @@
 
 package org.firehol.netdata.entity;
 
+/**
+ * Describes different algorithms how to interpret collected values.
+ * 
+ * @since 1.0.0
+ * @author Simon Nagl
+ */
 public enum DimensionAlgorithm {
 	/**
 	 * the value is to drawn as-is (interpolated to second boundary), if algorithm
