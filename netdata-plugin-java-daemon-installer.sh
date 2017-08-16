@@ -221,13 +221,13 @@ progress "Cleanup compilation directory"
 # -----------------------------------------------------------------------------
 progress "Compile and package netdata-plugin-java-daemon"
 
-run ./mvnw -T 1C package
+run ./mvnw -T 1C package || build_error
 
 # -----------------------------------------------------------------------------
 progress "Install netdata-plugin-java-daemon"
 
 # Create directory for jar if necessary
-[ -d "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon" ] || run mkdir -r "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon"
+[ -d "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon" ] || run mkdir -p "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon"
 # Copy the jar
 run cp target/java-daemon-*.jar "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar"
 
@@ -238,8 +238,15 @@ run chmod 0755 "${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin"
 
 # Copy configuration
 NETDATA_CONFIG_DIR="${NETDATA_PREFIX}/etc/netdata/"
-run cp "config/java.d.conf" "${NETDATA_CONFIG_DIR}"
-run cp -R "config/java.d" "${NETDATA_CONFIG_DIR}"
+[ -d "${NETDATA_CONFIG_DIR}" ] || run mkdir -p "${NETDATA_CONFIG_DIR}"
+[ -f "${NETDATA_CONFIG_DIR}/java.d.conf" ] || run cp "config/java.d.conf" "${NETDATA_CONFIG_DIR}"
+
+# Copy plugin configuration files if not present.
+[ -d "${NETDATA_CONFIG_DIR}/java.d" ] || run mkdir -p "${NETDATA_CONFIG_DIR}/java.d"
+for filename in $(ls config/java.d)
+do
+    [ -f "${NETDATA_CONFIG_DIR}/java.d/${filename}" ] || run cp "config/java.d/${filename}" "${NETDATA_CONFIG_DIR}/java.d/"
+done
 
 # -----------------------------------------------------------------------------
 # check if we can re-start netdata
