@@ -163,7 +163,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 		Chart chart = new Chart();
 
 		chart.setType("jmx_" + serverConfiguration.getName());
-		chart.setFamily(config.getSubsection());
+		chart.setFamily(config.getFamily());
 		chart.setId(config.getId());
 		chart.setTitle(config.getTitle());
 		chart.setUnits(config.getUnits());

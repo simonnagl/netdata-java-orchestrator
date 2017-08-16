@@ -83,7 +83,7 @@ public class MBeanServerCollectorTest {
 		assertNull(chart.getName());
 		assertEquals("title", chart.getTitle());
 		assertEquals("units", config.getUnits());
-		assertEquals("subsection", chart.getFamily());
+		assertEquals("family", chart.getFamily());
 		assertEquals(serverName, chart.getContext());
 		assertEquals(ChartType.LINE, chart.getChartType());
 		assertEquals(1000, chart.getPriority());
