@@ -48,6 +48,31 @@ public abstract class LoggingUtils {
 		return sb.toString();
 	}
 
+	public static String buildMessage(String... messages) {
+		if (messages.length == 0) {
+			return "";
+		}
+
+		if (messages.length == 1) {
+			return messages[0];
+		}
+
+		// Find String length.
+		int totalLength = 0;
+		for (String message : messages) {
+			totalLength = +message.length();
+		}
+
+		StringBuilder sb = new StringBuilder(totalLength);
+
+		// Build the message
+		for (String message : messages) {
+			sb.append(message);
+		}
+
+		return sb.toString();
+	}
+
 	public static Supplier<String> getMessageSupplier(Throwable reason) {
 		return new Supplier<String>() {
 			@Override
@@ -62,6 +87,15 @@ public abstract class LoggingUtils {
 			@Override
 			public String get() {
 				return buildMessage(message, reason);
+			}
+		};
+	}
+
+	public static Supplier<String> getMessageSupplier(String... messages) {
+		return new Supplier<String>() {
+			@Override
+			public String get() {
+				return buildMessage(messages);
 			}
 		};
 	}
