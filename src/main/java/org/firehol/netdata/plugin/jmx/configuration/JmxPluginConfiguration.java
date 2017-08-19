@@ -27,6 +27,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JmxPluginConfiguration {
+	private boolean autoMonitorLocalVirtualMachines = true;
+
 	private List<JmxServerConfiguration> jmxServers = new ArrayList<>();
 
 	private List<JmxChartConfiguration> commonCharts = new ArrayList<>();

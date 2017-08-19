@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -46,14 +48,23 @@ import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxPluginConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
 import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerConnectionException;
+import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.plugin.jmx.exception.VirtualMachineConnectionException;
+import org.firehol.netdata.plugin.jmx.utils.VirtualMachineUtils;
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
+
 public class JmxPlugin implements Collector {
 
-	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
+	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
 
 	private final ConfigurationService configurationService = ConfigurationService.getInstance();
+
+	private JmxPluginConfiguration configuration;
 
 	private final List<MBeanServerCollector> allMBeanCollector = new ArrayList<>();
 
@@ -61,7 +72,6 @@ public class JmxPlugin implements Collector {
 	public Collection<Chart> initialize() throws InitializationException {
 
 		// Read configuration
-		JmxPluginConfiguration configuration;
 		try {
 			configuration = configurationService.readPluginConfiguration("jmx", JmxPluginConfiguration.class);
 		} catch (ConfigurationSchemeInstantiationException e) {
@@ -102,11 +112,58 @@ public class JmxPlugin implements Collector {
 		// Connect to the local MBeanServer
 		JmxServerConfiguration localConfiguration = new JmxServerConfiguration();
 		localConfiguration.setCharts(configuration.getCommonCharts());
-		localConfiguration.setName("NetdataJavaDaemon");
+		localConfiguration.setName("JavaPluginDaemon");
 
 		MBeanServerCollector collector = new MBeanServerCollector(localConfiguration,
 				ManagementFactory.getPlatformMBeanServer());
 		allMBeanCollector.add(collector);
+
+		// Auto detect local VirtualMachines.
+		if (configuration.isAutoMonitorLocalVirtualMachines()) {
+			// Before, find the names of all configured collectors.
+			Set<String> allRuntimeName = new HashSet<>();
+			for (MBeanServerCollector mBeanCollector : allMBeanCollector) {
+				try {
+					String runtimeName = mBeanCollector.getRuntimeName();
+					allRuntimeName.add(runtimeName);
+				} catch (JmxMBeanServerQueryException e) {
+					log.warning(LoggingUtils.getMessageSupplier("Could not find runtimeName", e));
+				}
+			}
+
+			// List running VirtualMachines
+			List<VirtualMachineDescriptor> virtualMachineDescriptors = VirtualMachine.list();
+			for (VirtualMachineDescriptor virtualMachineDescriptor : virtualMachineDescriptors) {
+				// Build the MBeanServerCollector
+				try {
+					collector = buildMBeanServerCollector(virtualMachineDescriptor);
+				} catch (Exception e) {
+					log.warning(LoggingUtils.getMessageSupplier(
+							"Could not connect to JMX agent of process with PID " + virtualMachineDescriptor.id(), e));
+					continue;
+				}
+
+				// Check if we already have a connection to this server...
+				try {
+					String runtimeName = collector.getRuntimeName();
+					if (allRuntimeName.contains(runtimeName)) {
+						// ... and close the connection if true.
+						try {
+							collector.close();
+						} catch (IOException e) {
+							log.warning(LoggingUtils.getMessageSupplier(
+									"Could not close second connection to first configured and second auto detected JVM.",
+									e));
+						}
+						continue;
+					}
+				} catch (JmxMBeanServerQueryException e) {
+					log.warning(LoggingUtils.getMessageSupplier("Could not find runtimeName", e));
+				}
+
+				allMBeanCollector.add(collector);
+			}
+		}
 
 		// Initialize charts
 
@@ -146,6 +203,51 @@ public class JmxPlugin implements Collector {
 			}
 			throw new JmxMBeanServerConnectionException(
 					"Faild to connect to JMX Server " + config.getServiceUrl() + ".", e);
+		}
+	}
+
+	protected MBeanServerCollector buildMBeanServerCollector(VirtualMachineDescriptor virtualMachineDescriptor)
+			throws VirtualMachineConnectionException, JmxMBeanServerConnectionException {
+		VirtualMachine virtualMachine = null;
+
+		try {
+			virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
+
+			JMXServiceURL serviceUrl;
+			try {
+				serviceUrl = VirtualMachineUtils.getJMXServiceURL(virtualMachine, true);
+			} catch (IOException e) {
+				throw new VirtualMachineConnectionException(
+						"Could not get JMX ServiceUrl from Virtual Machine with PID " + virtualMachine.id(), e);
+
+			}
+
+			// Build configuration
+			JmxServerConfiguration config = new JmxServerConfiguration();
+			config.setServiceUrl(serviceUrl.toString());
+
+			config.setName(virtualMachine.id());
+			if (configuration != null) {
+				config.setCharts(configuration.getCommonCharts());
+			}
+
+			// Build the MBeanServerCollector
+			return buildMBeanServerCollector(config);
+
+		} catch (AttachNotSupportedException | IOException e) {
+			throw new VirtualMachineConnectionException(
+					"Could not attatch to virtualMachine with PID " + virtualMachineDescriptor.id(), e);
+
+		} finally {
+			// Detatch from virtual machine.
+			try {
+				if (virtualMachine != null) {
+					virtualMachine.detach();
+				}
+			} catch (IOException e) {
+				log.warning(LoggingUtils.getMessageSupplier(
+						"Could not detatch from virtual machine with PID " + virtualMachine.id(), e));
+			}
 		}
 	}
 

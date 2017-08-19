@@ -18,16 +18,14 @@
 
 package org.firehol.netdata.plugin.jmx.exception;
 
-/**
- * Represents exceptions while initializing a connection to a JxmMBean Server.
- * 
- * @since 1.0.0
- * @author Simon Nagl
- */
-public class JmxMBeanServerConnectionException extends JmxPluginException {
-	private static final long serialVersionUID = -6153969842214336278L;
+public class JmxPluginException extends Exception {
+	private static final long serialVersionUID = -9084555240752421197L;
 
-	public JmxMBeanServerConnectionException(String message, Throwable cause) {
+	public JmxPluginException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public JmxPluginException(String message) {
+		super(message);
 	}
 }
