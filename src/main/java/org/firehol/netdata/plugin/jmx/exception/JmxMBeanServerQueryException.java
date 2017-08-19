@@ -19,16 +19,13 @@
 package org.firehol.netdata.plugin.jmx.exception;
 
 /**
- * Errors while querying a MBean
+ * Represents an exception while querying a MBean.
  * 
+ * @since 1.0.0
  * @author Simon Nagl
  */
-public class JmxMBeanServerQueryException extends Exception {
+public class JmxMBeanServerQueryException extends JmxPluginException {
 	private static final long serialVersionUID = 5480135001434254831L;
-
-	public JmxMBeanServerQueryException() {
-		super();
-	}
 
 	public JmxMBeanServerQueryException(String message, Throwable cause) {
 		super(message, cause);
@@ -36,9 +33,5 @@ public class JmxMBeanServerQueryException extends Exception {
 
 	public JmxMBeanServerQueryException(String message) {
 		super(message);
-	}
-
-	public JmxMBeanServerQueryException(Throwable cause) {
-		super(cause);
 	}
 }

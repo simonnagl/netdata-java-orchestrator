@@ -38,6 +38,7 @@ import javax.management.remote.JMXConnector;
 import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.exception.InitializationException;
+import org.firehol.netdata.exception.UnreachableCodeException;
 import org.firehol.netdata.plugin.Collector;
 import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
@@ -83,6 +84,48 @@ public class MBeanServerCollector implements Collector, Closeable {
 			JMXConnector jmxConnector) {
 		this(configuration, mBeanServer);
 		this.jmxConnector = jmxConnector;
+	}
+
+	/**
+	 * <p>
+	 * Queries MBean {@code java.lang:type=Runtime} for attribute {@code Name}.
+	 * </p>
+	 * 
+	 * <p>
+	 * This attribute can be used as a unique identifier of the underlying JMX agent
+	 * </p>
+	 * 
+	 * @return the name representing the Java virtual machine of the queried
+	 *         server..
+	 * @throws JmxMBeanServerQueryException
+	 */
+	public String getRuntimeName() throws JmxMBeanServerQueryException {
+
+		// Final names.
+		final String runtimeMBeanName = "java.lang:type=Runtime";
+		final String runtimeNameAttributeName = "Name";
+
+		// Build object name.
+		ObjectName runtimeObjectName;
+		try {
+			runtimeObjectName = ObjectName.getInstance("java.lang:type=Runtime");
+		} catch (MalformedObjectNameException e) {
+			throw new UnreachableCodeException("Can not be reached because argument of getInstance() is static.", e);
+		}
+
+		// Query mBeanServer.
+		Object attribute = getAttribute(runtimeObjectName, "Name");
+		if (attribute instanceof String) {
+			String runtimeName = (String) attribute;
+			return runtimeName;
+		}
+
+		// Error handling
+		throw new JmxMBeanServerQueryException(
+				LoggingUtils.buildMessage("Expected attribute '", runtimeNameAttributeName, " 'of MBean '",
+						runtimeMBeanName, "' to return a string. Instead it returned a '",
+						attribute.getClass().getSimpleName().toString(), "'."));
+
 	}
 
 	public Collection<Chart> initialize() throws InitializationException {
