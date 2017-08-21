@@ -20,6 +20,8 @@ package org.firehol.netdata.plugin.jmx.configuration;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,5 +31,6 @@ public class JmxServerConfiguration {
 	private String serviceUrl;
 	private String name;
 
+	@JsonIgnore
 	private List<JmxChartConfiguration> charts;
 }
