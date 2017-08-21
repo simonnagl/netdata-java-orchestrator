@@ -119,7 +119,7 @@ public class JmxPlugin implements Collector {
 		allMBeanCollector.add(collector);
 
 		// Auto detect local VirtualMachines.
-		if (configuration.isAutoMonitorLocalVirtualMachines()) {
+		if (configuration.isAutoDetectLocalVirtualMachines()) {
 			// Before, find the names of all configured collectors.
 			Set<String> allRuntimeName = new HashSet<>();
 			for (MBeanServerCollector mBeanCollector : allMBeanCollector) {

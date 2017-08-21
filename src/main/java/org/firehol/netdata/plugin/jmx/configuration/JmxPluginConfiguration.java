@@ -33,7 +33,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JmxPluginConfiguration {
-	private boolean autoMonitorLocalVirtualMachines = true;
+	private boolean autoDetectLocalVirtualMachines = true;
 
 	private List<JmxServerConfiguration> jmxServers = new ArrayList<>();
 
