@@ -33,8 +33,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JmxPluginConfiguration {
+
+	/**
+	 * If true auto detect and monitor running local virtual machines on plugin
+	 * start.
+	 */
 	private boolean autoDetectLocalVirtualMachines = true;
 
+	/**
+	 * A list of JMX servers to monitor.
+	 */
 	private List<JmxServerConfiguration> jmxServers = new ArrayList<>();
 
 	private List<JmxChartConfiguration> commonCharts = new ArrayList<>();
