@@ -69,7 +69,7 @@ public class JmxChartConfiguration {
 	/**
 	 * how to interpret collected values.
 	 */
-	private DimensionAlgorithm dimType = DimensionAlgorithm.ABSOLUTE;
+	private DimensionAlgorithm dimensionAlgorithm = DimensionAlgorithm.ABSOLUTE;
 
 	/**
 	 * dimensions this chart displays.

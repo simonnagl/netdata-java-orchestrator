@@ -181,7 +181,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 		Dimension dimension = new Dimension();
 		dimension.setId(dimensionConfig.getName());
 		dimension.setName(dimensionConfig.getName());
-		dimension.setAlgorithm(chartConfig.getDimType());
+		dimension.setAlgorithm(chartConfig.getDimensionAlgorithm());
 		dimension.setMultiplier(dimensionConfig.getMultiplier());
 		dimension.setDivisor(dimensionConfig.getDivisor());
 
