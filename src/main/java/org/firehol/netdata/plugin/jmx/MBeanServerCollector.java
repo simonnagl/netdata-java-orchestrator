@@ -43,11 +43,19 @@ import org.firehol.netdata.plugin.Collector;
 import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.plugin.jmx.entity.MBeanQueryInfo;
 import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import lombok.Getter;
 
+/**
+ * Collects metrics of one MBeanServerConnection.
+ * 
+ * @since 1.0.0
+ * @author Simon Nagl
+ *
+ */
 public class MBeanServerCollector implements Collector, Closeable {
 
 	private final int LONG_RESOLUTION = 100;
@@ -68,18 +76,33 @@ public class MBeanServerCollector implements Collector, Closeable {
 	/**
 	 * Creates an MBeanServerCollector.
 	 * 
-	 * Only use this when you do not want to close the underlying JMXConnetor when
-	 * closing the generated MBeanServerCollector.
+	 * <p>
+	 * <b>Warning:</b> Only use this when you do not want to close the underlying
+	 * JMXConnetor when closing the generated MBeanServerCollector.
+	 * </p>
 	 * 
-	 * @param name
-	 *            presented at the submenu.
+	 * @param configuration
+	 *            Configuration to apply to this collector.
 	 * @param mBeanServer
+	 *            to query
 	 */
 	public MBeanServerCollector(JmxServerConfiguration configuration, MBeanServerConnection mBeanServer) {
 		this.serverConfiguration = configuration;
 		this.mBeanServer = mBeanServer;
 	}
 
+	/**
+	 * Creates an MBeanServerCollector.
+	 * 
+	 * <p>
+	 * Calling {@link close()} on the resulting {@code MBeanServerCollector} closes
+	 * {@code jmxConnector} too.
+	 * </p>
+	 * 
+	 * @param configuration
+	 * @param mBeanServer
+	 * @param jmxConnector
+	 */
 	public MBeanServerCollector(JmxServerConfiguration configuration, MBeanServerConnection mBeanServer,
 			JMXConnector jmxConnector) {
 		this(configuration, mBeanServer);
@@ -98,6 +121,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * @return the name representing the Java virtual machine of the queried
 	 *         server..
 	 * @throws JmxMBeanServerQueryException
+	 *             on errors.
 	 */
 	public String getRuntimeName() throws JmxMBeanServerQueryException {
 

@@ -18,12 +18,6 @@
 
 package org.firehol.netdata.plugin.jmx.exception;
 
-/**
- * Represents an exception while querying a MBean.
- * 
- * @since 1.0.0
- * @author Simon Nagl
- */
 public class JmxMBeanServerQueryException extends JmxPluginException {
 	private static final long serialVersionUID = 5480135001434254831L;
 

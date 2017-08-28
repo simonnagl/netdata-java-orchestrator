@@ -35,10 +35,8 @@ public class Chart {
 	 */
 	private String type;
 	/**
-	 * type.id
-	 *
-	 * uniquely identifies the chart, this is what will be needed to add values to
-	 * the chart
+	 * type.id uniquely identifies the chart, this is what will be needed to add
+	 * values to the chart
 	 */
 	private String id;
 	/**

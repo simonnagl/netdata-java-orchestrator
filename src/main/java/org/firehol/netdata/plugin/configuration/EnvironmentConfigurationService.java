@@ -30,15 +30,6 @@ import org.firehol.netdata.utils.LoggingUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-/**
- * Singleton for reading defined Environment Variables.
- * 
- * Quits the program if it could not initialize.
- * 
- * @author Simon Nagl
- * @since 1.0.0
- *
- */
 @Getter
 public class EnvironmentConfigurationService {
 	@Getter(AccessLevel.NONE)

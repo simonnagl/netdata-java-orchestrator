@@ -20,32 +20,17 @@ package org.firehol.netdata.utils;
 
 import java.util.logging.Logger;
 
-/**
- * Service to align execution of a command to an specified time interval.
- * 
- * @author Simon Nagl
- */
 public class AlignToTimeIntervalService {
 	private Logger log = Logger.getLogger("org.firehol.netdata.utils.aligntotimeintervalservice");
 
 	private long intervalInNSec;
 	private long lastTimestamp;
 
-	/**
-	 * Construct a new {@code AlignToTimeIntervalService} with an interval of
-	 * {@code intervalInNSec} nanoseconds.
-	 * 
-	 * @param intervalInNSec
-	 *            Interval to align to in seconds.
-	 */
 	public AlignToTimeIntervalService(long intervalInNSec) {
 		this.intervalInNSec = intervalInNSec;
 		this.lastTimestamp = ClockService.nowMonotonicNSec();
 	}
 
-	/**
-	 * @return
-	 */
 	public long alignToNextInterval() {
 		long now = ClockService.nowMonotonicNSec();
 		long next = now - (now % intervalInNSec) + intervalInNSec;

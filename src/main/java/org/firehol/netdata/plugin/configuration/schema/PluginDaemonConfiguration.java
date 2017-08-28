@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.configuration;
+package org.firehol.netdata.plugin.configuration.schema;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -16,8 +16,34 @@
  *
  */
 
+package org.firehol.netdata.plugin.jmx.entity;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.management.ObjectName;
+
+import org.firehol.netdata.entity.Dimension;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * 
- * @author Simon Nagl
+ * Technical Object which contains information which attributes of an M(X)Bean
+ * we collect and where to store the collected values.
  */
-package org.firehol.netdata.plugin.configuration;
+@Getter
+@Setter
+public class MBeanQueryInfo {
+
+	private ObjectName name;
+
+	private String attribute;
+
+	/**
+	 * The Class of the object returned by the query.
+	 */
+	private Class<?> type;
+
+	private List<Dimension> dimensions = new LinkedList<>();
+}

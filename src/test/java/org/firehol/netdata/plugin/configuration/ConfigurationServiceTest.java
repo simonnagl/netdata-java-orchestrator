@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
+import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

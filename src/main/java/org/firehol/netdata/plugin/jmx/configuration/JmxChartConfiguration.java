@@ -30,9 +30,6 @@ import lombok.Setter;
 /**
  * Configuration scheme of a chart created by the
  * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}.
- * 
- * @since 1.0.0
- * @author Simon Nagl
  */
 @Getter
 @Setter

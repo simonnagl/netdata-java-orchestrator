@@ -18,27 +18,13 @@
 
 package org.firehol.netdata.utils;
 
-/**
- * Operations on {@link java.lang.String}.
- *
- * @since 1.0.0
- * @author Simon Nagl
- * @see java.lang.String
- */
 public class StringUtils {
 
-	/**
-	 * Don't let anyone instantiate this class.
-	 */
 	private StringUtils() {
 	}
 
 	/**
 	 * Checks if a String is only whitespace, empty ("") or null.
-	 *
-	 * @param string
-	 *            the String to check
-	 * @return {@code true} if the String is blank
 	 */
 	public static boolean isBlank(String string) {
 		int length;

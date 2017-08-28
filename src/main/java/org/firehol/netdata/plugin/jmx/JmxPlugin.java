@@ -58,6 +58,19 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
+/**
+ * Netdata Java Plugin which collects metrics from JMX Servers.
+ * 
+ * <p>
+ * The plugin also attatches to the local JMX server to monitor the plugin
+ * daemon.
+ * </p>
+ * 
+ * @see <a href=
+ *      "http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">Java
+ *      Management Extensions (JMX) Technology</a>
+ *
+ */
 public class JmxPlugin implements Collector {
 
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
