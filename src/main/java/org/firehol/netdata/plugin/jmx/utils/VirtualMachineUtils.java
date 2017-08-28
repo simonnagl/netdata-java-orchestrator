@@ -41,9 +41,6 @@ public final class VirtualMachineUtils {
 
 	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
 
-	/**
-	 * Don't let anyone instantiate this class.
-	 */
 	private VirtualMachineUtils() {
 	}
 

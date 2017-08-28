@@ -44,6 +44,7 @@ import org.firehol.netdata.entity.DimensionAlgorithm;
 import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.plugin.jmx.entity.MBeanQueryInfo;
 import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.testutils.ReflectionUtils;
 import org.firehol.netdata.testutils.TestObjectBuilder;
@@ -83,7 +84,7 @@ public class MBeanServerCollectorTest {
 		assertNull(chart.getName());
 		assertEquals("title", chart.getTitle());
 		assertEquals("units", config.getUnits());
-		assertEquals("subsection", chart.getFamily());
+		assertEquals("family", chart.getFamily());
 		assertEquals(serverName, chart.getContext());
 		assertEquals(ChartType.LINE, chart.getChartType());
 		assertEquals(1000, chart.getPriority());

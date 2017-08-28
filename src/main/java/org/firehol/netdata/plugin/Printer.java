@@ -32,9 +32,6 @@ import org.firehol.netdata.entity.Dimension;
  */
 public final class Printer {
 
-	/**
-	 * Don't let anyone instantiate this class.
-	 */
 	private Printer() {
 	}
 
@@ -42,12 +39,6 @@ public final class Printer {
 		System.out.println(command);
 	}
 
-	/**
-	 * Print the initialization of a chart.
-	 * 
-	 * @param chart
-	 *            to initialize
-	 */
 	public static void initializeChart(final Chart chart) {
 		StringBuilder sb = new StringBuilder();
 		appendInitializeChart(sb, chart);

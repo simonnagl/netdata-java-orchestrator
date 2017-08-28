@@ -31,35 +31,12 @@ import org.firehol.netdata.utils.AlignToTimeIntervalService;
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.UnitConversion;
 
-/**
- * Netdata Java Plugin Daemon.
- *
- * Holds the main Function of the daemon.
- *
- * @author Simon Nagl
- * @since 1.0.0
- */
 public final class Main {
 	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
-	/**
-	 * Don't let anyone instantiate this class.
-	 */
 	private Main() {
 	}
 
-	/**
-	 * Exit the process.
-	 * 
-	 * <ol>
-	 * <li>Log {@code info}</li>
-	 * <li>Tell the caller not to start the plugin again</li>
-	 * <li>Kill the process</li>
-	 * </ol>
-	 * 
-	 * @param info
-	 *            message to log.
-	 */
 	public static void exit(String info) {
 		log.severe(info);
 		Printer.disable();
@@ -84,12 +61,6 @@ public final class Main {
 		}
 	}
 
-	/**
-	 * Initialize plugins and start the main loop.
-	 * 
-	 * @param args
-	 *            First arg must be updateEvery.
-	 */
 	public static void main(final String[] args) {
 		log.fine("Read command line options.");
 

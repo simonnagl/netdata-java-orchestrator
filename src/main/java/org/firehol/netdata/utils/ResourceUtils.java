@@ -24,14 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public abstract class ResourceUtils {
-	/**
-	 * Close a Resource asynchrony.
-	 * 
-	 * @param resource
-	 *            to close
-	 * @return Async Boolean which will indicate if the close threw an
-	 *         exception.
-	 */
+
 	public static CompletableFuture<Boolean> close(Closeable resource) {
 
 		return CompletableFuture.supplyAsync(new Supplier<Boolean>() {

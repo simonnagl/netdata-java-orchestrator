@@ -73,7 +73,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-        		</configuration>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -105,6 +105,18 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
 	<organization>
 		<name>Firehol</name>
 		<url>http://firehol.org</url>

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public class MainTest {
@@ -31,7 +32,10 @@ public class MainTest {
 	public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	@Rule
-	public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
+	public final SystemOutRule systemOutRule = new SystemOutRule().muteForSuccessfulTests().enableLog();
+
+	@Rule
+	public final SystemErrRule systemerrRule = new SystemErrRule().muteForSuccessfulTests();
 
 	@Test
 	public void testExit() throws Exception {
@@ -63,7 +67,7 @@ public class MainTest {
 
 		// Test
 		long result = Main.getUpdateEveryFailFast("wrong input");
-		
+
 		// Verify
 		assertEquals("DISABLE", systemOutRule.getLog());
 		assertEquals(1, result);

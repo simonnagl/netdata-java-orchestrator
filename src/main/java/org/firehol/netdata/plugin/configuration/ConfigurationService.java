@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import org.firehol.netdata.Main;
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
+import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -33,11 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
 
-/**
- * Service for reading configuration files.
- * 
- * @author Simon Nagl
- */
 public final class ConfigurationService {
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.configuration");
 
@@ -51,9 +47,6 @@ public final class ConfigurationService {
 
 	private static final ConfigurationService INSTANCE = new ConfigurationService();
 
-	/**
-	 * Do not let anyone instantiate this class.
-	 */
 	private ConfigurationService() {
 		log.info("Read configuration");
 		try {
@@ -71,11 +64,6 @@ public final class ConfigurationService {
 		mapper.enable(Feature.ALLOW_COMMENTS);
 	}
 
-	/**
-	 * Get an instance of the configuration service.
-	 * 
-	 * @return the ConfigurationService
-	 */
 	public static ConfigurationService getInstance() {
 		return INSTANCE;
 	}
@@ -83,14 +71,19 @@ public final class ConfigurationService {
 	/**
 	 * Read a configuration file.
 	 * 
+	 * <p>
 	 * If the file cannot be parsed for some reason this methods tries to use a
 	 * default configuration. This is the default instance of the configuration
 	 * scheme.
-	 *
+	 * </p>
+	 * 
+	 * @param <T>
+	 *            Configuration Schema.
+	 * 
 	 * @param file
-	 *            to read.
+	 *            to read
 	 * @param clazz
-	 *            The scheme of the configuration.
+	 *            The schema of the configuration.
 	 * @return The configuration read from file, or if it was invalid the default
 	 *         configuration.
 	 * @throws ConfigurationSchemeInstantiationException
