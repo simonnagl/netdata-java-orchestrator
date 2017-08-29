@@ -96,7 +96,8 @@ public final class ConfigurationService {
 		try {
 			configuration = mapper.readValue(file, clazz);
 		} catch (JsonParseException | JsonMappingException e) {
-			log.warning(LoggingUtils.getMessageSupplier("Could not read malformed configuration file.", e));
+			log.warning(LoggingUtils.getMessageSupplier(
+					"Could not read malformed configuration file '" + file.getAbsolutePath() + ".", e));
 		} catch (Exception e) {
 			log.warning(LoggingUtils
 					.getMessageSupplier("Could not read configuration file '" + file.getAbsolutePath() + "'.", e));
