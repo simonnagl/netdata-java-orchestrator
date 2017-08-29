@@ -232,7 +232,7 @@ progress "Install netdata-plugin-java-daemon"
 run cp target/java-daemon-*.jar "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar"
 
 # Write the executable
-run echo "java -Djava.util.logging.SimpleFormatter.format='%1\$tF %1\$TT: java.d: %4\$s: %3\$s: %5\$s%6\$s%n' -jar ${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar \$@" \
+run echo "exec java -Djava.util.logging.SimpleFormatter.format='%1\$tF %1\$TT: java.d: %4\$s: %3\$s: %5\$s%6\$s%n' -jar ${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar \$@" \
         > ${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin
 run chmod 0755 "${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin"
 
