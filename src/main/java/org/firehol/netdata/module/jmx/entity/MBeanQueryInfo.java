@@ -16,16 +16,34 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.exception;
+package org.firehol.netdata.module.jmx.entity;
 
-public class JmxMBeanServerQueryException extends JmxPluginException {
-	private static final long serialVersionUID = 5480135001434254831L;
+import java.util.LinkedList;
+import java.util.List;
 
-	public JmxMBeanServerQueryException(String message, Throwable cause) {
-		super(message, cause);
-	}
+import javax.management.ObjectName;
 
-	public JmxMBeanServerQueryException(String message) {
-		super(message);
-	}
+import org.firehol.netdata.model.Dimension;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Technical Object which contains information which attributes of an M(X)Bean
+ * we collect and where to store the collected values.
+ */
+@Getter
+@Setter
+public class MBeanQueryInfo {
+
+	private ObjectName name;
+
+	private String attribute;
+
+	/**
+	 * The Class of the object returned by the query.
+	 */
+	private Class<?> type;
+
+	private List<Dimension> dimensions = new LinkedList<>();
 }

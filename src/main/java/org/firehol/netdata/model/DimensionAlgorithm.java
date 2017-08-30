@@ -16,24 +16,31 @@
  *
  */
 
-package org.firehol.netdata.exception;
+package org.firehol.netdata.model;
 
-/**
- * Wraps an Exception during initialization. Marks the throwing object as
- * invalid.
- */
-public class InitializationException extends Exception {
-	private static final long serialVersionUID = 6446433868518776741L;
+public enum DimensionAlgorithm {
+	/**
+	 * the value is to drawn as-is (interpolated to second boundary), if algorithm
+	 * is empty, invalid or missing, absolute is used
+	 */
+	ABSOLUTE,
+	/**
+	 * the value increases over time, the difference from the last value is
+	 * presented in the chart, the server interpolates the value and calculates a
+	 * per second figure
+	 */
+	INCREMENTAL,
+	/**
+	 * the % of this value compared to the total of all dimensions
+	 */
+	PERCENTAGE_OF_ABSOLUTE_ROW,
+	/**
+	 * 
+	 */
+	PERCENTAGE_OF_INCREMENTAL_ROW;
 
-	public InitializationException(String message) {
-		super(message);
-	}
-
-	public InitializationException(Throwable cause) {
-		super(cause);
-	}
-
-	public InitializationException(String message, Throwable cause) {
-		super(message, cause);
+	@Override
+	public String toString() {
+		return name().replace('_', '-').toLowerCase();
 	}
 }

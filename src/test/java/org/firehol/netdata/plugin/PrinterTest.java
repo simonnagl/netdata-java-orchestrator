@@ -21,8 +21,8 @@ package org.firehol.netdata.plugin;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.Dimension;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.testutils.TestObjectBuilder;
 import org.junit.Rule;
 import org.junit.Test;

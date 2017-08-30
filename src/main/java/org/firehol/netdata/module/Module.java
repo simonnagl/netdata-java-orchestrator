@@ -16,12 +16,11 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.exception;
+package org.firehol.netdata.module;
 
-public class JmxMBeanServerConnectionException extends JmxPluginException {
-	private static final long serialVersionUID = -6153969842214336278L;
+import org.firehol.netdata.plugin.Collector;
 
-	public JmxMBeanServerConnectionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+public interface Module extends Collector {
+
+	String getName();
 }

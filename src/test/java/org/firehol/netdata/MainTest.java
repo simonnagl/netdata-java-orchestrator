@@ -38,39 +38,40 @@ public class MainTest {
 	public final SystemErrRule systemerrRule = new SystemErrRule().muteForSuccessfulTests();
 
 	@Test
-	public void testExit() throws Exception {
+	public void testGetUpdateEveryInSecondsFomCommandLineFailFast() {
+		final String[] args = { "3" };
 
-		// Expect
+		int updateEvery = Main.getUpdateEveryInSecondsFomCommandLineFailFast(args);
+
+		assertEquals(3, updateEvery);
+	}
+
+	@Test
+	public void testGetUpdateEveryInSecondsFomCommandLineFailFastFailToMany() {
+		exit.expectSystemExitWithStatus(1);
+		final String[] args = { "to", "many" };
+
 		exit.expectSystemExitWithStatus(1);
 
-		// Test
+		Main.getUpdateEveryInSecondsFomCommandLineFailFast(args);
+	}
+
+	@Test
+	public void testGetUpdateEveryInSecondsFomCommandLineFailFastFailNoNumber() {
+		exit.expectSystemExitWithStatus(1);
+		final String[] args = { "String" };
+
+		exit.expectSystemExitWithStatus(1);
+
+		Main.getUpdateEveryInSecondsFomCommandLineFailFast(args);
+	}
+
+	@Test
+	public void testExit() throws Exception {
+		exit.expectSystemExitWithStatus(1);
+
 		Main.exit("Test");
 
-		// Verify
 		assertEquals("DISABLE", systemOutRule.getLog());
 	}
-
-	@Test
-	public void testGetUpdateEveryFailFast() {
-
-		// Test
-		long result = Main.getUpdateEveryFailFast("1");
-
-		// Verify
-		assertEquals(1, result);
-	}
-
-	@Test
-	public void testGetUpdateEveryFailFastFailure() {
-		// Expect
-		exit.expectSystemExitWithStatus(1);
-
-		// Test
-		long result = Main.getUpdateEveryFailFast("wrong input");
-
-		// Verify
-		assertEquals("DISABLE", systemOutRule.getLog());
-		assertEquals(1, result);
-	}
-
 }

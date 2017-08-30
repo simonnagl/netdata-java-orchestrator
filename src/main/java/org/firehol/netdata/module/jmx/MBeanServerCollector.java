@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx;
+package org.firehol.netdata.module.jmx;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -35,16 +35,16 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.Dimension;
 import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.exception.UnreachableCodeException;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.module.jmx.entity.MBeanQueryInfo;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.plugin.Collector;
-import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
-import org.firehol.netdata.plugin.jmx.entity.MBeanQueryInfo;
-import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import lombok.Getter;
@@ -60,7 +60,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 	private final int LONG_RESOLUTION = 100;
 
-	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
+	private final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
 	private JmxServerConfiguration serverConfiguration;
 

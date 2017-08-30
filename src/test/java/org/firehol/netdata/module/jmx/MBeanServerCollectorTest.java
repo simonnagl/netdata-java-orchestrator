@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx;
+package org.firehol.netdata.module.jmx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,15 +37,16 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.ChartType;
-import org.firehol.netdata.entity.Dimension;
-import org.firehol.netdata.entity.DimensionAlgorithm;
-import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
-import org.firehol.netdata.plugin.jmx.entity.MBeanQueryInfo;
-import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.model.ChartType;
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.model.DimensionAlgorithm;
+import org.firehol.netdata.module.jmx.MBeanServerCollector;
+import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.module.jmx.entity.MBeanQueryInfo;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.testutils.ReflectionUtils;
 import org.firehol.netdata.testutils.TestObjectBuilder;
 import org.junit.Test;
@@ -135,7 +136,7 @@ public class MBeanServerCollectorTest {
 		// Static Objects
 		JmxDimensionConfiguration dimensionConfig = TestObjectBuilder.buildJmxDimensionConfiguration();
 		// Add a valid object name.
-		ObjectName name = new ObjectName("org.firehol.netdata.plugin.jmx", "key", "value");
+		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
 		dimensionConfig.setFrom(name.toString());
 
 		// Mock
@@ -154,7 +155,7 @@ public class MBeanServerCollectorTest {
 	public void testGetAttribute() throws MalformedObjectNameException, AttributeNotFoundException,
 			InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
 		// Static Objects
-		ObjectName name = new ObjectName("org.firehol.netdata.plugin.jmx", "key", "value");
+		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
 		String attribute = "attribute";
 
 		// Mock
@@ -171,7 +172,7 @@ public class MBeanServerCollectorTest {
 	public void testGetAttributeFailure() throws MalformedObjectNameException, AttributeNotFoundException,
 			InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
 		// Static Objects
-		ObjectName name = new ObjectName("org.firehol.netdata.plugin.jmx", "key", "value");
+		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
 		String attribute = "attribute";
 
 		// Mock

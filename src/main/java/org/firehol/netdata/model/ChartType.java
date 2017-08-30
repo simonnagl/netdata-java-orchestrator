@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.entity;
+package org.firehol.netdata.model;
 
 public enum ChartType {
 	LINE, AREA, STACKED;

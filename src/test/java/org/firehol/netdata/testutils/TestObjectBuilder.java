@@ -18,11 +18,11 @@
 
 package org.firehol.netdata.testutils;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.ChartType;
-import org.firehol.netdata.entity.Dimension;
-import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxDimensionConfiguration;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.model.ChartType;
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
 
 /**
  * Build standard Test Objects.

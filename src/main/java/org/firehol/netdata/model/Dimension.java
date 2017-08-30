@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.entity;
+package org.firehol.netdata.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

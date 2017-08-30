@@ -16,24 +16,16 @@
  *
  */
 
-package org.firehol.netdata.exception;
+package org.firehol.netdata.module.jmx.exception;
 
-/**
- * Wraps an Exception during initialization. Marks the throwing object as
- * invalid.
- */
-public class InitializationException extends Exception {
-	private static final long serialVersionUID = 6446433868518776741L;
+public class VirtualMachineConnectionException extends JmxPluginException {
+	private static final long serialVersionUID = -4214747861980964583L;
 
-	public InitializationException(String message) {
+	public VirtualMachineConnectionException(String message) {
 		super(message);
 	}
 
-	public InitializationException(Throwable cause) {
-		super(cause);
-	}
-
-	public InitializationException(String message, Throwable cause) {
-		super(message, cause);
+	public VirtualMachineConnectionException(String message, Throwable reason) {
+		super(message, reason);
 	}
 }

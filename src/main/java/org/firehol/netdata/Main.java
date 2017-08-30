@@ -18,85 +18,51 @@
 
 package org.firehol.netdata;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.exception.UnreachableCodeException;
+import org.firehol.netdata.module.Module;
+import org.firehol.netdata.module.jmx.JmxPlugin;
+import org.firehol.netdata.plugin.Plugin;
 import org.firehol.netdata.plugin.Printer;
-import org.firehol.netdata.plugin.jmx.JmxPlugin;
-import org.firehol.netdata.utils.AlignToTimeIntervalService;
+import org.firehol.netdata.plugin.configuration.ConfigurationService;
 import org.firehol.netdata.utils.LoggingUtils;
-import org.firehol.netdata.utils.UnitConversion;
 
 public final class Main {
 	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
 
+	private static List<Module> modules = Collections.emptyList();
+
 	private Main() {
+	}
+
+	public static void main(final String[] args) {
+		int updateEverySecond = getUpdateEveryInSecondsFomCommandLineFailFast(args);
+		configureModules();
+		new Plugin(updateEverySecond, modules).start();
+	}
+
+	protected static int getUpdateEveryInSecondsFomCommandLineFailFast(final String[] args) {
+		try {
+			return new CommandLineArgs(args).getUpdateEveryInSeconds();
+		} catch (Exception failureReason) {
+			exit(LoggingUtils.buildMessage("Invalid command line options supplied.", failureReason));
+			throw new UnreachableCodeException();
+		}
+	}
+
+	private static void configureModules() {
+		ConfigurationService configService = ConfigurationService.getInstance();
+		modules = new LinkedList<>();
+		modules.add(new JmxPlugin(configService));
 	}
 
 	public static void exit(String info) {
 		log.severe(info);
 		Printer.disable();
 		System.exit(1);
-	}
-
-	/**
-	 * Parse one parameter (from command line).
-	 * 
-	 * Exit the program if it could not be parsed.
-	 * 
-	 * @param commandLineParameter
-	 *            updateEvery part from the command line
-	 * @return parsed update interval in seconds
-	 */
-	protected static long getUpdateEveryFailFast(String commandLineParameter) {
-		try {
-			return Long.valueOf(commandLineParameter);
-		} catch (NumberFormatException e) {
-			exit("Could not parse command line parameter '" + commandLineParameter + "'");
-			throw new UnreachableCodeException();
-		}
-	}
-
-	public static void main(final String[] args) {
-		log.fine("Read command line options.");
-
-		if (args.length < 1) {
-			exit("Can't find a command line parameter. Expected one which configures the update interval in seconds.");
-		}
-		long updateEverySec = getUpdateEveryFailFast(args[0]);
-
-		// Create plugins
-		JmxPlugin jmxPlugin = new JmxPlugin();
-
-		// Initialize plugins
-		Collection<Chart> chartsToInitialize = new LinkedList<>();
-		try {
-			chartsToInitialize.addAll(jmxPlugin.initialize());
-		} catch (InitializationException e) {
-			log.severe(LoggingUtils.buildMessage("Could not initialize jmxPlugin", e));
-		}
-
-		if (chartsToInitialize.size() < 1) {
-			exit("No Charts to initialize. Disabling Java Plugin Daemon.");
-		}
-
-		// Initialize charts
-		for (Chart chart : chartsToInitialize) {
-			Printer.initializeChart(chart);
-		}
-
-		// Start the main loop
-		long updateEveryNSec = updateEverySec * UnitConversion.NANO_PER_PLAIN;
-		AlignToTimeIntervalService timeService = new AlignToTimeIntervalService(updateEveryNSec);
-		while (true) {
-			timeService.alignToNextInterval();
-
-			// Collect values and print them.
-			jmxPlugin.collectValues().stream().forEach(Printer::collect);
-		}
 	}
 }

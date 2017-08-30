@@ -16,20 +16,20 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.configuration;
+package org.firehol.netdata.module.jmx.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.firehol.netdata.entity.ChartType;
-import org.firehol.netdata.entity.DimensionAlgorithm;
+import org.firehol.netdata.model.ChartType;
+import org.firehol.netdata.model.DimensionAlgorithm;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Configuration scheme of a chart created by the
- * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}.
+ * {@link org.firehol.netdata.module.jmx.JmxPlugin}.
  */
 @Getter
 @Setter

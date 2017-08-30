@@ -18,8 +18,8 @@
 
 package org.firehol.netdata.plugin;
 
-import org.firehol.netdata.entity.Chart;
-import org.firehol.netdata.entity.Dimension;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.model.Dimension;
 
 /**
  * The class {@code Printer} contains methods to communicate with the caller.

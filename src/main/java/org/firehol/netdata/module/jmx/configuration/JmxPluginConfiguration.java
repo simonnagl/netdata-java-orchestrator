@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.configuration;
+package org.firehol.netdata.module.jmx.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import lombok.Setter;
 
 /**
  * Configuration scheme to configure
- * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}
+ * {@link org.firehol.netdata.module.jmx.JmxPlugin}
  * 
  * @since 1.0.0
  * @author Simon Nagl

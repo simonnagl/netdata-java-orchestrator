@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx;
+package org.firehol.netdata.module.jmx;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -39,18 +39,18 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.firehol.netdata.entity.Chart;
 import org.firehol.netdata.exception.InitializationException;
-import org.firehol.netdata.plugin.Collector;
+import org.firehol.netdata.model.Chart;
+import org.firehol.netdata.module.Module;
+import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxPluginConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerConnectionException;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.exception.VirtualMachineConnectionException;
+import org.firehol.netdata.module.jmx.utils.VirtualMachineUtils;
 import org.firehol.netdata.plugin.configuration.ConfigurationService;
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
-import org.firehol.netdata.plugin.jmx.configuration.JmxChartConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxPluginConfiguration;
-import org.firehol.netdata.plugin.jmx.configuration.JmxServerConfiguration;
-import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerConnectionException;
-import org.firehol.netdata.plugin.jmx.exception.JmxMBeanServerQueryException;
-import org.firehol.netdata.plugin.jmx.exception.VirtualMachineConnectionException;
-import org.firehol.netdata.plugin.jmx.utils.VirtualMachineUtils;
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
@@ -71,15 +71,19 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
  *      Management Extensions (JMX) Technology</a>
  *
  */
-public class JmxPlugin implements Collector {
+public class JmxPlugin implements Module {
 
-	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
+	private final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
-	private final ConfigurationService configurationService = ConfigurationService.getInstance();
+	private final ConfigurationService configurationService;
 
 	private JmxPluginConfiguration configuration;
 
 	private final List<MBeanServerCollector> allMBeanCollector = new ArrayList<>();
+
+	public JmxPlugin(ConfigurationService configurationService) {
+		this.configurationService = configurationService;
+	}
 
 	@Override
 	public Collection<Chart> initialize() throws InitializationException {
@@ -281,6 +285,11 @@ public class JmxPlugin implements Collector {
 	public Collection<Chart> collectValues() {
 		return allMBeanCollector.stream().map(MBeanServerCollector::collectValues).flatMap(Collection::stream)
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public String getName() {
+		return "jmx";
 	}
 
 }

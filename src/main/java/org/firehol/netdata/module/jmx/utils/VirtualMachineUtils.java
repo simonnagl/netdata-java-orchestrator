@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.utils;
+package org.firehol.netdata.module.jmx.utils;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -39,7 +39,7 @@ public final class VirtualMachineUtils {
 
 	private static final String SERVICE_URL_AGENT_PROPERTY_KEY = "com.sun.management.jmxremote.localConnectorAddress";
 
-	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin.jmx");
+	private static final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
 	private VirtualMachineUtils() {
 	}

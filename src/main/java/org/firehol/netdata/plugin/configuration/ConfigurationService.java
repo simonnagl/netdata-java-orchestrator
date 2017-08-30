@@ -56,12 +56,13 @@ public final class ConfigurationService {
 		}
 
 		log.fine("Initialize object mapper for reading configuration files.");
-		mapper = new ObjectMapper();
-		configureObjectMapper(mapper);
+		mapper = buildObjectMapper();
 	}
 
-	private void configureObjectMapper(ObjectMapper mapper) {
+	private ObjectMapper buildObjectMapper() {
+		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(Feature.ALLOW_COMMENTS);
+		return mapper;
 	}
 
 	public static ConfigurationService getInstance() {

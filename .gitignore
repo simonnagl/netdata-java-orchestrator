@@ -17,3 +17,6 @@ target/
 # netdata-plugin-java-daemon-installer.sh
 netdata-plugin-java-daemon-installer.log
 netdata-plugin-java-daemon-uninstaller.sh
+
+# macOS
+.DS_Store

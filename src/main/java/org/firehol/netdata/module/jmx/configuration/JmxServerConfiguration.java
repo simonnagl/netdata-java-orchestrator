@@ -16,45 +16,40 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.configuration;
+package org.firehol.netdata.module.jmx.configuration;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Configuration scheme of a dimension of a chart created by the
- * {@link org.firehol.netdata.plugin.jmx.JmxPlugin}.
+ * Configuration scheme to configure JMX agents to monitor.
  */
 @Getter
 @Setter
-public class JmxDimensionConfiguration {
+public class JmxServerConfiguration {
+	/**
+	 * JMX Service URL used to connect to the JVM.
+	 * 
+	 * <blockquote> {@code service:jmx:rmi://[host[:port]][urlPath]} </blockquote>
+	 * 
+	 * @see <a href=
+	 *      "https://docs.oracle.com/cd/E19159-01/819-7758/gcnqf/index.html">Oracle
+	 *      Developer's Guide for JMX Clients</a>
+	 * 
+	 */
+	private String serviceUrl;
 
 	/**
-	 * Jmx Object Name.
-	 */
-	private String from;
-
-	/**
-	 * jmxBean property
-	 */
-	private String value;
-
-	/**
-	 * Multiply the collected value before displaying it.
-	 */
-	private int multiplier = 1;
-	/**
-	 * Divide the collected value before displaying it.
-	 */
-	private int divisor = 1;
-
-	/**
-	 * Name displayed to user.
+	 * Name displayed at the dashboard.
 	 */
 	private String name;
 
-	/**
-	 * If true the value get's collected but not displayed.
-	 */
-	private boolean hidden = false;
+	@JsonIgnore
+	// This property is not part of the configuration scheme.
+	// This is a technical property used by the plugin.
+	private List<JmxChartConfiguration> charts;
 }

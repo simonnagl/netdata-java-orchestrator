@@ -16,16 +16,12 @@
  *
  */
 
-package org.firehol.netdata.plugin.jmx.exception;
+package org.firehol.netdata.exception;
 
-public class VirtualMachineConnectionException extends JmxPluginException {
-	private static final long serialVersionUID = -4214747861980964583L;
+public class IllegalCommandLineArumentException extends Exception {
+	private static final long serialVersionUID = 3530966792041074621L;
 
-	public VirtualMachineConnectionException(String message) {
-		super(message);
-	}
-
-	public VirtualMachineConnectionException(String message, Throwable reason) {
+	public IllegalCommandLineArumentException(String message, Throwable reason) {
 		super(message, reason);
 	}
 }
