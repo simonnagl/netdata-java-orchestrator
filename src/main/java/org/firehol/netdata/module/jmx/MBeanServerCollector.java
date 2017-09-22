@@ -33,6 +33,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 
 import org.firehol.netdata.exception.InitializationException;
@@ -95,7 +96,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * Creates an MBeanServerCollector.
 	 * 
 	 * <p>
-	 * Calling {@link close()} on the resulting {@code MBeanServerCollector} closes
+	 * Calling {@code close()} on the resulting {@code MBeanServerCollector} closes
 	 * {@code jmxConnector} too.
 	 * </p>
 	 * 
@@ -228,20 +229,32 @@ public class MBeanServerCollector implements Collector, Closeable {
 		} catch (NullPointerException e) {
 			throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
 		}
-		Object value = getAttribute(name, dimensionConfig.getValue());
+
+		Object value = getAttribute(name, dimensionConfig.getValue(), dimensionConfig.getKey());
 
 		// Add to queryInfo
 		MBeanQueryInfo queryInfo = new MBeanQueryInfo();
 		queryInfo.setName(name);
 		queryInfo.setAttribute(dimensionConfig.getValue());
+		queryInfo.setKey(dimensionConfig.getKey());
 		queryInfo.setType(value.getClass());
 
 		return queryInfo;
 	}
 
 	protected Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
+		return getAttribute(name, attribute, null);
+	}
+
+	protected Object getAttribute(ObjectName name, String attribute, String key) throws JmxMBeanServerQueryException {
 		try {
-			return mBeanServer.getAttribute(name, attribute);
+			Object value = mBeanServer.getAttribute(name, attribute);
+
+			if (value instanceof CompositeData) {
+				return ((CompositeData) value).get(key);
+			} else {
+				return value;
+			}
 		} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException | ReflectionException
 				| IOException e) {
 			throw new JmxMBeanServerQueryException(
@@ -270,7 +283,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 			MBeanQueryInfo queryInfo = queryInfoIterator.next();
 
 			try {
-				long value = toLong(getAttribute(queryInfo.getName(), queryInfo.getAttribute()));
+				long value = toLong(getAttribute(queryInfo.getName(), queryInfo.getAttribute(), queryInfo.getKey()));
 				for (Dimension dim : queryInfo.getDimensions()) {
 					dim.setCurrentValue(value);
 				}

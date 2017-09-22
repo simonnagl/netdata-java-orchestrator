@@ -40,6 +40,8 @@ public class MBeanQueryInfo {
 
 	private String attribute;
 
+	private String key;
+
 	/**
 	 * The Class of the object returned by the query.
 	 */

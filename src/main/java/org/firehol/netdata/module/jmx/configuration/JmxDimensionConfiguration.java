@@ -40,6 +40,11 @@ public class JmxDimensionConfiguration {
 	private String value;
 
 	/**
+	 * CompositeData key
+	 */
+	private String key;
+
+	/**
 	 * Multiply the collected value before displaying it.
 	 */
 	private int multiplier = 1;
