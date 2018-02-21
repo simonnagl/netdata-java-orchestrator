@@ -1,3 +1,9 @@
+# Important: Deprecation Note
+
+This repository is outdated. I will not merge any pull requests here. I continue developing this plugin on my [netdata fork](https://github.com/simonnagl/netdata). For issues and requests for the java plugin you can use the [netdata issue tracker](https://github.com/firehol/netdata/issues). If you want to contribute with code please open a pull request to the fork.
+
+As soon as the fork gets stable I can merge it directly to netdata.
+
 # Netdata Java Plugin Daemon
 
 [![Build Status](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon.svg?branch=master)](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon)
