@@ -1,6 +1,12 @@
 language: java
+
+dist: trusty
+
 jdk:
   - oraclejdk8
+  - oraclejdk9
+  - oraclejdk11
+  - openjdk8
 
 before_install:
   - sudo apt-get install jq
