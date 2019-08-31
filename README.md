@@ -9,7 +9,6 @@ As soon as the fork gets stable I can merge it directly to netdata.
 [![Build Status](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon.svg?branch=master)](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=badger)
-[![Dependency Status](https://www.versioneye.com/user/projects/59994481368b08135edcaabe/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/59994481368b08135edcaabe)
 
 netdata-java-plugin-daeimon is a [netdata](https://github.com/firehol/netdata) plugin which can collect any data in java and send it to netdata.
 
