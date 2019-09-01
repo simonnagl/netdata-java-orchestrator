@@ -1,6 +1,7 @@
-package org.firehol.netdata.module.jmx.entity;
+package org.firehol.netdata.module.jmx;
 
 import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.MBeanQuery;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 
 import static org.junit.Assert.*;
