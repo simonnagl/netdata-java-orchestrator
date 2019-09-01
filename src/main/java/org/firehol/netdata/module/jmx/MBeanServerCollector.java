@@ -42,8 +42,9 @@ import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
-import org.firehol.netdata.module.jmx.entity.MBeanQueryInfo;
+import org.firehol.netdata.module.jmx.entity.MBeanQuery;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import org.firehol.netdata.plugin.Collector;
 import org.firehol.netdata.utils.LoggingUtils;
 
@@ -58,7 +59,7 @@ import lombok.Getter;
  */
 public class MBeanServerCollector implements Collector, Closeable {
 
-	private final int LONG_RESOLUTION = 100;
+	public static final int LONG_RESOLUTION = 100;
 
 	private final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
@@ -69,7 +70,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 	private JMXConnector jmxConnector;
 
-	private List<MBeanQueryInfo> allMBeanQueryInfo = new LinkedList<>();
+	private List<MBeanQuery> allMBeanQuery = new LinkedList<>();
 
 	private List<Chart> allChart = new LinkedList<>();
 
@@ -95,7 +96,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * Creates an MBeanServerCollector.
 	 * 
 	 * <p>
-	 * Calling {@link close()} on the resulting {@code MBeanServerCollector} closes
+	 * Calling {@link #close()}} on the resulting {@code MBeanServerCollector} closes
 	 * {@code jmxConnector} too.
 	 * </p>
 	 * 
@@ -140,15 +141,14 @@ public class MBeanServerCollector implements Collector, Closeable {
 		// Query mBeanServer.
 		Object attribute = getAttribute(runtimeObjectName, "Name");
 		if (attribute instanceof String) {
-			String runtimeName = (String) attribute;
-			return runtimeName;
+			return (String) attribute;
 		}
 
 		// Error handling
 		throw new JmxMBeanServerQueryException(
 				LoggingUtils.buildMessage("Expected attribute '", runtimeNameAttributeName, " 'of MBean '",
 						runtimeMBeanName, "' to return a string. Instead it returned a '",
-						attribute.getClass().getSimpleName().toString(), "'."));
+						attribute.getClass().getSimpleName(), "'."));
 
 	}
 
@@ -163,14 +163,14 @@ public class MBeanServerCollector implements Collector, Closeable {
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
 
 				// Add to queryInfo
-				MBeanQueryInfo queryInfo;
+				MBeanQuery queryInfo;
 				try {
 					queryInfo = initializeMBeanQueryInfo(dimensionConfig);
 				} catch (JmxMBeanServerQueryException e) {
 					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
 					continue;
 				}
-				allMBeanQueryInfo.add(queryInfo);
+				allMBeanQuery.add(queryInfo);
 
 				Dimension dimension = initializeDimension(chartConfig, dimensionConfig, queryInfo.getType());
 				queryInfo.getDimensions().add(dimension);
@@ -210,17 +210,17 @@ public class MBeanServerCollector implements Collector, Closeable {
 		dimension.setDivisor(dimensionConfig.getDivisor());
 
 		if (Double.class.isAssignableFrom(valueType)) {
-			dimension.setDivisor(dimension.getDivisor() * this.LONG_RESOLUTION);
+			dimension.setDivisor(dimension.getDivisor() * LONG_RESOLUTION);
 		}
 
 		return dimension;
 	}
 
-	protected MBeanQueryInfo initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
+	protected MBeanQuery initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
 			throws JmxMBeanServerQueryException {
 
 		// Query once to get dataType.
-		ObjectName name = null;
+		ObjectName name;
 		try {
 			name = ObjectName.getInstance(dimensionConfig.getFrom());
 		} catch (MalformedObjectNameException e) {
@@ -231,7 +231,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 		Object value = getAttribute(name, dimensionConfig.getValue());
 
 		// Add to queryInfo
-		MBeanQueryInfo queryInfo = new MBeanQueryInfo();
+		MBeanQuery queryInfo = new MBeanQuery();
 		queryInfo.setName(name);
 		queryInfo.setAttribute(dimensionConfig.getValue());
 		queryInfo.setType(value.getClass());
@@ -240,46 +240,24 @@ public class MBeanServerCollector implements Collector, Closeable {
 	}
 
 	protected Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
-		try {
-			return mBeanServer.getAttribute(name, attribute);
-		} catch (AttributeNotFoundException | InstanceNotFoundException | MBeanException | ReflectionException
-				| IOException e) {
-			throw new JmxMBeanServerQueryException(
-					"Could not query attribute '" + attribute + "' of MBean '" + name + "'", e);
-		}
-
-	}
-
-	protected long toLong(Object any) {
-		if (any instanceof Integer) {
-			return ((Integer) any).longValue();
-		} else if (any instanceof Double) {
-			double doubleValue = (double) any;
-			return (long) (doubleValue * this.LONG_RESOLUTION);
-		} else {
-			return (long) any;
-		}
-
+		return MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
 	}
 
 	public Collection<Chart> collectValues() {
 		// Query all attributes and fill charts.
-		Iterator<MBeanQueryInfo> queryInfoIterator = allMBeanQueryInfo.iterator();
+		Iterator<MBeanQuery> queryIterator = allMBeanQuery.iterator();
 
-		while (queryInfoIterator.hasNext()) {
-			MBeanQueryInfo queryInfo = queryInfoIterator.next();
+		while (queryIterator.hasNext()) {
+			MBeanQuery query = queryIterator.next();
 
 			try {
-				long value = toLong(getAttribute(queryInfo.getName(), queryInfo.getAttribute()));
-				for (Dimension dim : queryInfo.getDimensions()) {
-					dim.setCurrentValue(value);
-				}
+				query.query(mBeanServer);
 			} catch (JmxMBeanServerQueryException e) {
 				// Stop collecting this value.
 				log.warning(LoggingUtils.buildMessage(
-						"Stop collection value '" + queryInfo.getAttribute() + "' of '" + queryInfo.getName() + "'.",
+						"Stop collection value '" + query.getAttribute() + "' of '" + query.getName() + "'.",
 						e));
-				queryInfoIterator.remove();
+				queryIterator.remove();
 			}
 		}
 
