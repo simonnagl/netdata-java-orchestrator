@@ -20,10 +20,11 @@ package org.firehol.netdata.module.jmx.configuration;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.firehol.netdata.module.jmx.JmxModule;
 
 /**
  * Configuration scheme of a dimension of a chart created by the
- * {@link org.firehol.netdata.module.jmx.JmxPlugin}.
+ * {@link JmxModule}.
  */
 @Getter
 @Setter

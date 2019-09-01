@@ -71,7 +71,7 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
  *      Management Extensions (JMX) Technology</a>
  *
  */
-public class JmxPlugin implements Module {
+public class JmxModule implements Module {
 
 	private final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
@@ -81,7 +81,7 @@ public class JmxPlugin implements Module {
 
 	private final List<MBeanServerCollector> allMBeanCollector = new ArrayList<>();
 
-	public JmxPlugin(ConfigurationService configurationService) {
+	public JmxModule(ConfigurationService configurationService) {
 		this.configurationService = configurationService;
 	}
 

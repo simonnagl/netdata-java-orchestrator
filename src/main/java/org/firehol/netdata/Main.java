@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 import org.firehol.netdata.exception.UnreachableCodeException;
 import org.firehol.netdata.module.Module;
-import org.firehol.netdata.module.jmx.JmxPlugin;
+import org.firehol.netdata.module.jmx.JmxModule;
 import org.firehol.netdata.plugin.Plugin;
 import org.firehol.netdata.plugin.Printer;
 import org.firehol.netdata.plugin.configuration.ConfigurationService;
@@ -45,7 +45,7 @@ public final class Main {
 		new Plugin(updateEverySecond, modules).start();
 	}
 
-	protected static int getUpdateEveryInSecondsFomCommandLineFailFast(final String[] args) {
+	static int getUpdateEveryInSecondsFomCommandLineFailFast(final String[] args) {
 		try {
 			return new CommandLineArgs(args).getUpdateEveryInSeconds();
 		} catch (Exception failureReason) {
@@ -57,7 +57,7 @@ public final class Main {
 	private static void configureModules() {
 		ConfigurationService configService = ConfigurationService.getInstance();
 		modules = new LinkedList<>();
-		modules.add(new JmxPlugin(configService));
+		modules.add(new JmxModule(configService));
 	}
 
 	public static void exit(String info) {
