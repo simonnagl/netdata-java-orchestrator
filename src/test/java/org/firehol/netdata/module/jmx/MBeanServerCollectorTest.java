@@ -41,11 +41,10 @@ import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.model.ChartType;
 import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.model.DimensionAlgorithm;
-import org.firehol.netdata.module.jmx.MBeanServerCollector;
 import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
-import org.firehol.netdata.module.jmx.entity.MBeanQueryInfo;
+import org.firehol.netdata.module.jmx.entity.MBeanQuery;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.testutils.ReflectionUtils;
 import org.firehol.netdata.testutils.TestObjectBuilder;
@@ -140,10 +139,10 @@ public class MBeanServerCollectorTest {
 		dimensionConfig.setFrom(name.toString());
 
 		// Mock
-		when(mBeanServer.getAttribute(name, "value")).thenReturn(new Long(1234));
+		when(mBeanServer.getAttribute(name, "value")).thenReturn(1234L);
 
 		// Test
-		MBeanQueryInfo queryInfo = mBeanServerCollector.initializeMBeanQueryInfo(dimensionConfig);
+		MBeanQuery queryInfo = mBeanServerCollector.initializeMBeanQueryInfo(dimensionConfig);
 
 		// Verify
 		assertEquals(name, queryInfo.getName());
@@ -159,7 +158,7 @@ public class MBeanServerCollectorTest {
 		String attribute = "attribute";
 
 		// Mock
-		when(mBeanServer.getAttribute(name, attribute)).thenReturn(new Long(1234));
+		when(mBeanServer.getAttribute(name, attribute)).thenReturn(1234L);
 
 		// Test
 		Object value = mBeanServerCollector.getAttribute(name, attribute);
@@ -180,42 +179,6 @@ public class MBeanServerCollectorTest {
 
 		// Test
 		mBeanServerCollector.getAttribute(name, attribute);
-	}
-
-	@Test
-	public void testToLongLong() {
-		// Static Object
-		long value = 1234;
-
-		// Test
-		long result = mBeanServerCollector.toLong(value);
-
-		// Verify
-		assertEquals(value, result);
-	}
-
-	@Test
-	public void testToLongInteger() {
-		// Static Object
-		int value = 1234;
-
-		// Test
-		long result = mBeanServerCollector.toLong(value);
-
-		// Verify
-		assertEquals(1234, result);
-	}
-
-	@Test
-	public void testToLongDouble() {
-		// Static Object
-		double value = 1234;
-
-		// Test
-		long result = mBeanServerCollector.toLong(value);
-
-		// Verify
-		assertEquals(1234 * 100, result);
 	}
 
 	@Test
