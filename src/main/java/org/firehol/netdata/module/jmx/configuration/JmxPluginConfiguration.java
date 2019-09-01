@@ -23,10 +23,11 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.firehol.netdata.module.jmx.JmxModule;
 
 /**
  * Configuration scheme to configure
- * {@link org.firehol.netdata.module.jmx.JmxPlugin}
+ * {@link JmxModule}
  * 
  * @since 1.0.0
  * @author Simon Nagl

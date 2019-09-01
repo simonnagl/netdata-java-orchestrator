@@ -26,10 +26,11 @@ import org.firehol.netdata.model.DimensionAlgorithm;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.firehol.netdata.module.jmx.JmxModule;
 
 /**
  * Configuration scheme of a chart created by the
- * {@link org.firehol.netdata.module.jmx.JmxPlugin}.
+ * {@link JmxModule}.
  */
 @Getter
 @Setter
