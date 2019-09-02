@@ -54,8 +54,6 @@ import lombok.Getter;
  */
 public class MBeanServerCollector implements Collector, Closeable {
 
-	public static final int LONG_RESOLUTION = 100;
-
 	private final Logger log = Logger.getLogger("org.firehol.netdata.module.jmx");
 
 	private JmxServerConfiguration serverConfiguration;
@@ -157,19 +155,18 @@ public class MBeanServerCollector implements Collector, Closeable {
 			// Check if the mBeanServer has the desired sources.
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
 
+				Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
+				chart.getAllDimension().add(dimension);
+
 				// Add to queryInfo
 				MBeanQuery queryInfo;
 				try {
-					queryInfo = initializeMBeanQueryInfo(dimensionConfig);
+					queryInfo = initializeMBeanQueryInfo(dimensionConfig, dimension);
 				} catch (JmxMBeanServerQueryException e) {
 					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
 					continue;
 				}
 				allMBeanQuery.add(queryInfo);
-
-				Dimension dimension = initializeDimension(chartConfig, dimensionConfig, queryInfo.getType());
-				queryInfo.getDimensions().add(dimension);
-				chart.getAllDimension().add(dimension);
 			}
 
 			allChart.add(chart);
@@ -178,7 +175,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return allChart;
 	}
 
-	protected Chart initializeChart(JmxChartConfiguration config) {
+	Chart initializeChart(JmxChartConfiguration config) {
 		Chart chart = new Chart();
 
 		chart.setType("jmx_" + serverConfiguration.getName());
@@ -195,8 +192,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return chart;
 	}
 
-	protected Dimension initializeDimension(JmxChartConfiguration chartConfig,
-			JmxDimensionConfiguration dimensionConfig, Class<?> valueType) {
+	Dimension initializeDimension(JmxChartConfiguration chartConfig,
+								  JmxDimensionConfiguration dimensionConfig) {
 		Dimension dimension = new Dimension();
 		dimension.setId(dimensionConfig.getName());
 		dimension.setName(dimensionConfig.getName());
@@ -204,14 +201,11 @@ public class MBeanServerCollector implements Collector, Closeable {
 		dimension.setMultiplier(dimensionConfig.getMultiplier());
 		dimension.setDivisor(dimensionConfig.getDivisor());
 
-		if (Double.class.isAssignableFrom(valueType)) {
-			dimension.setDivisor(dimension.getDivisor() * LONG_RESOLUTION);
-		}
 
 		return dimension;
 	}
 
-	protected MBeanQuery initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig)
+		MBeanQuery initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig, final Dimension dimension)
 			throws JmxMBeanServerQueryException {
 
 		// Query once to get dataType.
@@ -225,16 +219,10 @@ public class MBeanServerCollector implements Collector, Closeable {
 		}
 		Object value = getAttribute(name, dimensionConfig.getValue());
 
-		// Add to queryInfo
-		MBeanQuery queryInfo = new MBeanQuery();
-		queryInfo.setName(name);
-		queryInfo.setAttribute(dimensionConfig.getValue());
-		queryInfo.setType(value.getClass());
-
-		return queryInfo;
+		return new MBeanQuery(name, dimensionConfig.getValue(), value.getClass(), dimension);
 	}
 
-	protected Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
+	Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
 		return MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
 	}
 

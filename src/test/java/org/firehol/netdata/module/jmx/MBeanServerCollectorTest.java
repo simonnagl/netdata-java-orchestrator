@@ -116,7 +116,7 @@ public class MBeanServerCollectorTest {
 		chartConfig.getDimensions().add(dimensionConfig);
 
 		// Test
-		Dimension dimension = mBeanServerCollector.initializeDimension(chartConfig, dimensionConfig, Long.class);
+		Dimension dimension = mBeanServerCollector.initializeDimension(chartConfig, dimensionConfig);
 
 		// Verify
 		assertEquals("name", dimension.getId());
@@ -141,7 +141,7 @@ public class MBeanServerCollectorTest {
 		when(mBeanServer.getAttribute(name, "value")).thenReturn(1234L);
 
 		// Test
-		MBeanQuery queryInfo = mBeanServerCollector.initializeMBeanQueryInfo(dimensionConfig);
+		MBeanQuery queryInfo = mBeanServerCollector.initializeMBeanQueryInfo(dimensionConfig, null);
 
 		// Verify
 		assertEquals(name, queryInfo.getName());

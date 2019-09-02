@@ -40,6 +40,8 @@ import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 @Setter
 public class MBeanQuery {
 
+	private static final int LONG_RESOLUTION = 100;
+
 	private ObjectName name;
 
 	private String attribute;
@@ -50,6 +52,18 @@ public class MBeanQuery {
 	private Class<?> type;
 
 	private List<Dimension> dimensions = new LinkedList<>();
+
+	public MBeanQuery(ObjectName name, String attribute, Class<?> attributeType, Dimension dimension) {
+		this.name = name;
+		this.attribute = attribute;
+		this.type = attributeType;
+		this.getDimensions().add(dimension);
+
+		if (Double.class.isAssignableFrom(attributeType)) {
+			dimension.setDivisor(dimension.getDivisor() * LONG_RESOLUTION);
+		}
+
+	}
 
 	public void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException {
 		Long result = toLong(MBeanServerUtils.getAttribute(mBeanServer, this.name, this.attribute));
@@ -62,7 +76,7 @@ public class MBeanQuery {
 			return ((Integer) any).longValue();
 		} else if (any instanceof Double) {
 			double doubleValue = (double) any;
-			return (long) (doubleValue * MBeanServerCollector.LONG_RESOLUTION);
+			return (long) (doubleValue * LONG_RESOLUTION);
 		} else {
 			return (long) any;
 		}
