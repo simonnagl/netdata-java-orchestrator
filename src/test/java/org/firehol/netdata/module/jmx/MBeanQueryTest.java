@@ -26,13 +26,12 @@ public class MBeanQueryTest {
     @Test
     public void testConstructor() throws MalformedObjectNameException {
         final ObjectName name = new ObjectName("*:type=MBean");
-        final Dimension dimension = new Dimension();
-        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class, dimension);
+        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class);
         
         assertEquals(name, query.getName());
         assertEquals("MBeanAttributeName", query.getAttribute());
         assertEquals(Long.class, query.getType());
-        assertEquals(dimension, query.getDimensions().get(0));
+        assertTrue(query.getDimensions().isEmpty());
     }
 
     @Test
@@ -46,7 +45,7 @@ public class MBeanQueryTest {
         // prepare
         final ObjectName name = new ObjectName("*:type=MBean");
         final Dimension dim = new Dimension();
-        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class, dim);
+        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class);
         final Dimension dim1 = new Dimension();
         dim1.setName("Dimension 1");
         query.getDimensions().add(dim1);
