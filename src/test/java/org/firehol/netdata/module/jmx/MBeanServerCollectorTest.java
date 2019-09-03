@@ -129,27 +129,6 @@ public class MBeanServerCollectorTest {
 	}
 
 	@Test
-	public void testInitializeMBeanQueryInfo() throws JmxMBeanServerQueryException, MalformedObjectNameException,
-			AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException, IOException {
-		// Static Objects
-		JmxDimensionConfiguration dimensionConfig = TestObjectBuilder.buildJmxDimensionConfiguration();
-		// Add a valid object name.
-		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
-		dimensionConfig.setFrom(name.toString());
-
-		// Mock
-		when(mBeanServer.getAttribute(name, "value")).thenReturn(1234L);
-
-		// Test
-		MBeanQuery queryInfo = mBeanServerCollector.initializeMBeanQueryInfo(dimensionConfig, null);
-
-		// Verify
-		assertEquals(name, queryInfo.getName());
-		assertEquals("value", queryInfo.getAttribute());
-		assertEquals(Long.class, queryInfo.getType());
-	}
-
-	@Test
 	public void testGetAttribute() throws MalformedObjectNameException, AttributeNotFoundException,
 			InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
 		// Static Objects

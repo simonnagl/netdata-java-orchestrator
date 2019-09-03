@@ -20,10 +20,7 @@ package org.firehol.netdata.module.jmx;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import javax.management.MBeanServerConnection;
@@ -47,7 +44,7 @@ import lombok.Getter;
 
 /**
  * Collects metrics of one MBeanServerConnection.
- * 
+ *
  * @since 1.0.0
  * @author Simon Nagl
  *
@@ -69,12 +66,12 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 	/**
 	 * Creates an MBeanServerCollector.
-	 * 
+	 *
 	 * <p>
 	 * <b>Warning:</b> Only use this when you do not want to close the underlying
 	 * JMXConnetor when closing the generated MBeanServerCollector.
 	 * </p>
-	 * 
+	 *
 	 * @param configuration
 	 *            Configuration to apply to this collector.
 	 * @param mBeanServer
@@ -87,12 +84,12 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 	/**
 	 * Creates an MBeanServerCollector.
-	 * 
+	 *
 	 * <p>
 	 * Calling {@link #close()}} on the resulting {@code MBeanServerCollector} closes
 	 * {@code jmxConnector} too.
 	 * </p>
-	 * 
+	 *
 	 * @param configuration
 	 * @param mBeanServer
 	 * @param jmxConnector
@@ -107,11 +104,11 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * <p>
 	 * Queries MBean {@code java.lang:type=Runtime} for attribute {@code Name}.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * This attribute can be used as a unique identifier of the underlying JMX agent
 	 * </p>
-	 * 
+	 *
 	 * @return the name representing the Java virtual machine of the queried
 	 *         server..
 	 * @throws JmxMBeanServerQueryException
@@ -155,24 +152,42 @@ public class MBeanServerCollector implements Collector, Closeable {
 			// Check if the mBeanServer has the desired sources.
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
 
-				Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
-				chart.getAllDimension().add(dimension);
-
-				// Add to queryInfo
-				MBeanQuery queryInfo;
+				final ObjectName objectName;
+				final Object value;
+				// Check if dimension is readable
 				try {
-					queryInfo = initializeMBeanQueryInfo(dimensionConfig, dimension);
+					try {
+						objectName = ObjectName.getInstance(dimensionConfig.getFrom());
+					} catch (MalformedObjectNameException e) {
+						throw new JmxMBeanServerQueryException("'" + dimensionConfig.getFrom() + "' is no valid JMX ObjectName", e);
+					} catch (NullPointerException e) {
+						throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
+					}
+					value = getAttribute(objectName, dimensionConfig.getValue());
 				} catch (JmxMBeanServerQueryException e) {
 					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
 					continue;
 				}
-				allMBeanQuery.add(queryInfo);
-			}
+
+                // Initialize Query Info if needed
+                final MBeanQuery mBeanQuery = getMBeanQueryForName(objectName, dimensionConfig.getValue()).orElse(addNewMBeanQuery(objectName, dimensionConfig.getValue(), value.getClass()));
+
+                // Initialize Dimension
+                final Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
+
+                chart.getAllDimension().add(dimension);
+                mBeanQuery.addDimension(dimension);
+            }
+
 
 			allChart.add(chart);
 		}
 
 		return allChart;
+	}
+
+	private Optional<MBeanQuery> getMBeanQueryForName(final ObjectName objectName, final String attribute) {
+		return allMBeanQuery.stream().filter(mBeanQuery -> mBeanQuery.getName().equals(objectName) && mBeanQuery.getAttribute().equals(attribute)).findAny();
 	}
 
 	Chart initializeChart(JmxChartConfiguration config) {
@@ -205,22 +220,11 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return dimension;
 	}
 
-		MBeanQuery initializeMBeanQueryInfo(JmxDimensionConfiguration dimensionConfig, final Dimension dimension)
-			throws JmxMBeanServerQueryException {
-
-		// Query once to get dataType.
-		ObjectName name;
-		try {
-			name = ObjectName.getInstance(dimensionConfig.getFrom());
-		} catch (MalformedObjectNameException e) {
-			throw new JmxMBeanServerQueryException("'" + dimensionConfig.getFrom() + "' is no valid JMX ObjectName", e);
-		} catch (NullPointerException e) {
-			throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
-		}
-		Object value = getAttribute(name, dimensionConfig.getValue());
-
-		return new MBeanQuery(name, dimensionConfig.getValue(), value.getClass(), dimension);
-	}
+	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName, Object value) {
+		final MBeanQuery query = new MBeanQuery(objectName, valueName, value.getClass());
+        allMBeanQuery.add(query);
+        return query;
+    }
 
 	Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
 		return MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
@@ -250,7 +254,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.Closeable#close()
 	 */
 	@Override

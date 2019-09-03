@@ -216,12 +216,12 @@ EOF
 # -----------------------------------------------------------------------------
 progress "Cleanup compilation directory"
 
-[ -d target ] && run ./mvnw clean
+[ -d target ] && run ./mvnw -o clean
 
 # -----------------------------------------------------------------------------
 progress "Compile and package netdata-plugin-java-daemon"
 
-run ./mvnw -T 1C package || build_error
+run ./mvnw -o -T 1C package || build_error
 
 # -----------------------------------------------------------------------------
 progress "Install netdata-plugin-java-daemon"
