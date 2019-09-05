@@ -1,11 +1,13 @@
-package org.firehol.netdata.module.jmx;
+package org.firehol.netdata.module.jmx.query;
 
 import org.firehol.netdata.model.Dimension;
-import org.firehol.netdata.module.jmx.MBeanQuery;
+import org.firehol.netdata.module.jmx.query.MBeanQuery;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -14,24 +16,22 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MBeanServerUtils.class)
-public class MBeanQueryTest {
+public class MBeanDefaultQueryTest {
 
     @Test
     public void testConstructor() throws MalformedObjectNameException {
         final ObjectName name = new ObjectName("*:type=MBean");
-        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class);
+        final MBeanDefaultQuery query = new MBeanDefaultQuery(name, "MBeanAttributeName", Long.class);
         
-        assertEquals(name, query.getName());
-        assertEquals("MBeanAttributeName", query.getAttribute());
-        assertEquals(Long.class, query.getType());
-        assertTrue(query.getDimensions().isEmpty());
+        Assert.assertEquals(name, query.getName());
+        Assert.assertEquals("MBeanAttributeName", query.getAttribute());
+        Assert.assertEquals(Long.class, query.getType());
+        Assert.assertTrue(query.getDimensions().isEmpty());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class MBeanQueryTest {
         // prepare
         final ObjectName name = new ObjectName("*:type=MBean");
         final Dimension dim = new Dimension();
-        final MBeanQuery query = new MBeanQuery(name, "MBeanAttributeName", Long.class);
+        final MBeanDefaultQuery query = new MBeanDefaultQuery(name, "MBeanAttributeName", Long.class);
         final Dimension dim1 = new Dimension();
         dim1.setName("Dimension 1");
         query.getDimensions().add(dim1);
@@ -56,14 +56,14 @@ public class MBeanQueryTest {
         final MBeanServerConnection mBeanServer = mock(MBeanServerConnection.class);
 
         PowerMockito.mockStatic(MBeanServerUtils.class);
-        when(MBeanServerUtils.getAttribute(any(), any(), any())).thenReturn(queryResult);
+        when(MBeanServerUtils.getAttribute(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(queryResult);
 
         // test
         query.query(mBeanServer);
 
         // assert
         for(Dimension dimension : query.getDimensions()) {
-            assertEquals(dimension.getName(), (Long) 1234L, dimension.getCurrentValue());
+            Assert.assertEquals(dimension.getName(), (Long) 1234L, dimension.getCurrentValue());
         }
     }
 }

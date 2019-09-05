@@ -36,6 +36,7 @@ import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.query.MBeanQuery;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import org.firehol.netdata.plugin.Collector;
 import org.firehol.netdata.utils.LoggingUtils;
@@ -221,7 +222,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 	}
 
 	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName, Object value) {
-		final MBeanQuery query = new MBeanQuery(objectName, valueName, value.getClass());
+		final MBeanQuery query = MBeanQuery.newInstance(objectName, valueName, value.getClass());
         allMBeanQuery.add(query);
         return query;
     }
