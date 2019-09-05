@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.module.jmx;
+package org.firehol.netdata.module.jmx.query;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,6 @@ import org.firehol.netdata.model.Dimension;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.firehol.netdata.module.jmx.MBeanServerCollector;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 
@@ -39,33 +38,25 @@ import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
  */
 @Getter
 @Setter
-public class MBeanQuery {
-
-	private static final int LONG_RESOLUTION = 100;
+public abstract class  MBeanQuery {
 
 	private ObjectName name;
 
 	private String attribute;
 
-	/**
-	 * The Class of the object returned by the query.
-	 */
-	private Class<?> type;
-
 	@Setter(AccessLevel.NONE)
 	private List<Dimension> dimensions = new LinkedList<>();
 
-	public MBeanQuery(ObjectName name, String attribute, Class<?> attributeType) {
+	MBeanQuery(ObjectName name, String attribute) {
 		this.name = name;
 		this.attribute = attribute;
-		this.type = attributeType;
+	}
+
+	public static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
+		return new MBeanDefaultQuery(name, attribute, attributeType);
 	}
 
 	public void addDimension(Dimension dimension) {
-		if (Double.class.isAssignableFrom(type)) {
-			dimension.setDivisor(dimension.getDivisor() * LONG_RESOLUTION);
-		}
-
 		this.dimensions.add(dimension);
 	}
 
@@ -75,14 +66,7 @@ public class MBeanQuery {
 		dimensions.forEach(dimension -> dimension.setCurrentValue(result));
 	}
 
-	private long toLong(Object any) {
-		if (any instanceof Integer) {
-			return ((Integer) any).longValue();
-		} else if (any instanceof Double) {
-			double doubleValue = (double) any;
-			return (long) (doubleValue * LONG_RESOLUTION);
-		} else {
-			return (long) any;
-		}
-	}
+	protected abstract long toLong(final Object attribute);
+
+
 }
