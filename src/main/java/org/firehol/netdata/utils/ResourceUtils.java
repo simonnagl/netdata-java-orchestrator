@@ -23,7 +23,10 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public abstract class ResourceUtils {
+public final class ResourceUtils {
+
+	private ResourceUtils() {
+	}
 
 	public static CompletableFuture<Boolean> close(Closeable resource) {
 

@@ -20,7 +20,10 @@ package org.firehol.netdata.utils;
 
 import java.util.function.Supplier;
 
-public abstract class LoggingUtils {
+public final class LoggingUtils {
+
+	private LoggingUtils() {
+	}
 
 	private static void appendMessage(Throwable reason, StringBuilder sb) {
 

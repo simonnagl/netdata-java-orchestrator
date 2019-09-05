@@ -18,7 +18,7 @@
 
 package org.firehol.netdata.utils;
 
-public class StringUtils {
+public final class StringUtils {
 
 	private StringUtils() {
 	}
