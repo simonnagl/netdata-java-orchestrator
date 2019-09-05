@@ -21,11 +21,6 @@ public class MBeanServerUtilsTest {
     @Mock
     private MBeanServerConnection mBeanServer;
 
-    @Test(expected = IllegalAccessException.class)
-    public void testUltilsNotInstanciable() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        MBeanServerUtils.class.getDeclaredConstructor().newInstance();
-    }
-
     @Test
     public void testGetAttribute() throws MalformedObjectNameException, AttributeNotFoundException,
             InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
