@@ -221,8 +221,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return dimension;
 	}
 
-	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName, Object value) {
-		final MBeanQuery query = MBeanQuery.newInstance(objectName, valueName, value.getClass());
+	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName, final Class<?> attributeType) {
+		final MBeanQuery query = MBeanQuery.newInstance(objectName, valueName, attributeType);
         allMBeanQuery.add(query);
         return query;
     }

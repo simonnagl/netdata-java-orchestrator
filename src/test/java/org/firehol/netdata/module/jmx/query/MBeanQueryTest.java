@@ -1,7 +1,6 @@
 package org.firehol.netdata.module.jmx.query;
 
 import org.firehol.netdata.model.Dimension;
-import org.firehol.netdata.module.jmx.query.MBeanQuery;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import org.junit.Assert;
@@ -16,28 +15,54 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MBeanServerUtils.class)
-public class MBeanDefaultQueryTest {
+public class MBeanQueryTest {
 
     @Test
-    public void testConstructor() throws MalformedObjectNameException {
-        final ObjectName name = new ObjectName("*:type=MBean");
-        final MBeanDefaultQuery query = new MBeanDefaultQuery(name, "MBeanAttributeName", Long.class);
-        
-        Assert.assertEquals(name, query.getName());
-        Assert.assertEquals("MBeanAttributeName", query.getAttribute());
-        Assert.assertEquals(Long.class, query.getType());
-        Assert.assertTrue(query.getDimensions().isEmpty());
+    public void testNewInstanceInteger() {
+        final MBeanQuery mBeanQuery = MBeanQuery.newInstance(ObjectName.WILDCARD, "attributeName", Integer.class);
+
+        assertInstanceOf(MBeanIntegerQuery.class, mBeanQuery);
+    }
+
+    @Test
+    public void testNewInstanceLong() {
+        final MBeanQuery mBeanQuery = MBeanQuery.newInstance(ObjectName.WILDCARD, "attributeName", Long.class);
+
+        assertInstanceOf(MBeanLongQuery.class, mBeanQuery);
+    }
+
+    @Test
+    public void testNewInstanceDouble() {
+        final MBeanQuery mBeanQuery = MBeanQuery.newInstance(ObjectName.WILDCARD, "attributeName", Double.class);
+
+        assertInstanceOf(MBeanDoubleQuery.class, mBeanQuery);
+    }
+
+    private void assertInstanceOf(final Class<?> expectedClass, final MBeanQuery mBeanQuery) {
+        if (!expectedClass.isInstance(mBeanQuery)) {
+            fail(String.format("%s should be instance of %s but is instance of %s", mBeanQuery.toString(),expectedClass.toString(), mBeanQuery.getClass().toString()));
+        }
     }
 
     @Test
     public void testQueryLong() throws JmxMBeanServerQueryException, MalformedObjectNameException {
         testQuery(1234L);
+    }
+
+    @Test
+    public void testQueryDouble() throws JmxMBeanServerQueryException, MalformedObjectNameException {
         testQuery(12.34);
+
+    }
+
+    @Test
+    public void TestQueryInteger() throws JmxMBeanServerQueryException, MalformedObjectNameException {
         testQuery(1234);
     }
 
@@ -45,7 +70,7 @@ public class MBeanDefaultQueryTest {
         // prepare
         final ObjectName name = new ObjectName("*:type=MBean");
         final Dimension dim = new Dimension();
-        final MBeanDefaultQuery query = new MBeanDefaultQuery(name, "MBeanAttributeName", Long.class);
+        final MBeanQuery query = MBeanQuery.newInstance(name, "MBeanAttributeName", queryResult.getClass());
         final Dimension dim1 = new Dimension();
         dim1.setName("Dimension 1");
         query.getDimensions().add(dim1);
@@ -66,4 +91,5 @@ public class MBeanDefaultQueryTest {
             Assert.assertEquals(dimension.getName(), (Long) 1234L, dimension.getCurrentValue());
         }
     }
+
 }
