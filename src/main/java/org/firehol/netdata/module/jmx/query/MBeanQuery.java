@@ -38,35 +38,43 @@ import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
  */
 @Getter
 @Setter
-public abstract class  MBeanQuery {
+public abstract class MBeanQuery {
 
-	private ObjectName name;
+    private ObjectName name;
 
-	private String attribute;
+    private String attribute;
 
-	@Setter(AccessLevel.NONE)
-	private List<Dimension> dimensions = new LinkedList<>();
+    @Setter(AccessLevel.NONE)
+    private List<Dimension> dimensions = new LinkedList<>();
 
-	MBeanQuery(ObjectName name, String attribute) {
-		this.name = name;
-		this.attribute = attribute;
-	}
+    MBeanQuery(ObjectName name, String attribute) {
+        this.name = name;
+        this.attribute = attribute;
+    }
 
-	public static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
-		return new MBeanDefaultQuery(name, attribute, attributeType);
-	}
+    public static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
+        if (attributeType.isAssignableFrom(Double.class)) {
+            return new MBeanDoubleQuery(name, attribute);
+        }
 
-	public void addDimension(Dimension dimension) {
-		this.dimensions.add(dimension);
-	}
+        if (attributeType.isAssignableFrom(Integer.class)) {
+            return new MBeanIntegerQuery(name, attribute);
+        }
 
-	public void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException {
-		Long result = toLong(MBeanServerUtils.getAttribute(mBeanServer, this.name, this.attribute));
+        return new MBeanLongQuery(name, attribute);
+    }
 
-		dimensions.forEach(dimension -> dimension.setCurrentValue(result));
-	}
+    public void addDimension(Dimension dimension) {
+        this.dimensions.add(dimension);
+    }
 
-	protected abstract long toLong(final Object attribute);
+    public void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException {
+        Long result = toLong(MBeanServerUtils.getAttribute(mBeanServer, this.name, this.attribute));
+
+        dimensions.forEach(dimension -> dimension.setCurrentValue(result));
+    }
+
+    protected abstract long toLong(final Object queryResult);
 
 
 }
