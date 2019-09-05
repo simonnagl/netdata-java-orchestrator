@@ -5,7 +5,7 @@ import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import javax.management.*;
 import java.io.IOException;
 
-public class MBeanServerUtils {
+public final class MBeanServerUtils {
 
     private MBeanServerUtils() {
     }

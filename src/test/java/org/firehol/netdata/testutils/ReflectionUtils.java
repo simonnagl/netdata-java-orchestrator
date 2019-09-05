@@ -20,7 +20,11 @@ package org.firehol.netdata.testutils;
 
 import java.lang.reflect.Field;
 
-public abstract class ReflectionUtils {
+public final class ReflectionUtils {
+
+	private ReflectionUtils() {
+	}
+
 	/**
 	 * Getter for private field {@code filedName} of {@code object}.
 	 *
