@@ -41,6 +41,7 @@ import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.model.ChartType;
 import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.model.DimensionAlgorithm;
+import org.firehol.netdata.module.jmx.MBeanServerCollector;
 import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxDimensionConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;

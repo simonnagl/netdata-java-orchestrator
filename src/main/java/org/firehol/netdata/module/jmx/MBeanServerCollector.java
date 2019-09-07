@@ -154,8 +154,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 			for (JmxDimensionConfiguration dimensionConfig : chartConfig.getDimensions()) {
 
 				final ObjectName objectName;
-				final Object value;
-				// Check if dimension is readable
+				final MBeanQuery mBeanQuery;
+
 				try {
 					try {
 						objectName = ObjectName.getInstance(dimensionConfig.getFrom());
@@ -164,20 +164,19 @@ public class MBeanServerCollector implements Collector, Closeable {
 					} catch (NullPointerException e) {
 						throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
 					}
-					value = getAttribute(objectName, dimensionConfig.getValue());
+
+					// Initialize Query Info if needed
+					mBeanQuery = getMBeanQueryForName(objectName, dimensionConfig.getValue()).orElse(addNewMBeanQuery(objectName, dimensionConfig.getValue()));
 				} catch (JmxMBeanServerQueryException e) {
 					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
 					continue;
 				}
 
-                // Initialize Query Info if needed
-                final MBeanQuery mBeanQuery = getMBeanQueryForName(objectName, dimensionConfig.getValue()).orElse(addNewMBeanQuery(objectName, dimensionConfig.getValue(), value.getClass()));
-
                 // Initialize Dimension
                 final Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
 
                 chart.getAllDimension().add(dimension);
-                mBeanQuery.addDimension(dimension);
+                mBeanQuery.addDimension(dimension, dimensionConfig.getValue());
             }
 
 
@@ -221,8 +220,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return dimension;
 	}
 
-	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName, final Class<?> attributeType) {
-		final MBeanQuery query = MBeanQuery.newInstance(objectName, valueName, attributeType);
+	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName) throws JmxMBeanServerQueryException {
+		final MBeanQuery query = MBeanQuery.newInstance(mBeanServer, objectName, valueName);
         allMBeanQuery.add(query);
         return query;
     }

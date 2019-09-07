@@ -13,7 +13,7 @@ public class UtilsTest {
     public void testUtils() {
         JavaClasses importedClasses = new ClassFileImporter().importPackages("org.firehol");
 
-        ArchRule rule = classes().that().haveSimpleNameEndingWith("Utils")
+        final ArchRule rule = classes().that().haveSimpleNameEndingWith("Utils")
                 .should().haveModifier(JavaModifier.FINAL)
                 .andShould().haveOnlyPrivateConstructors();
 

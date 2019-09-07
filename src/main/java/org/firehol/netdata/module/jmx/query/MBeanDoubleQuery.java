@@ -4,16 +4,16 @@ import org.firehol.netdata.model.Dimension;
 
 import javax.management.ObjectName;
 
-class MBeanDoubleQuery extends MBeanQuery {
+class MBeanDoubleQuery extends MBeanSimpleQuery {
     private static final int LONG_RESOLUTION = 100;
 
     MBeanDoubleQuery(final ObjectName name, final String attribute) {
         super(name, attribute);
     }
 
-    public void addDimension(Dimension dimension) {
+    public void addDimension(Dimension dimension, final String mBeanAttribute) {
         dimension.setDivisor(dimension.getDivisor() * LONG_RESOLUTION);
-        super.addDimension(dimension);
+        super.addDimension(dimension, mBeanAttribute);
     }
 
     @Override
