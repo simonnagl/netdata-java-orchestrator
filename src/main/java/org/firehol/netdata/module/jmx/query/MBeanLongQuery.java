@@ -1,11 +1,8 @@
 package org.firehol.netdata.module.jmx.query;
 
-import org.firehol.netdata.model.Dimension;
-
 import javax.management.ObjectName;
 
-class MBeanLongQuery extends MBeanQuery {
-
+class MBeanLongQuery extends MBeanSimpleQuery {
     MBeanLongQuery(final ObjectName name, final String attribute) {
         super(name, attribute);
     }

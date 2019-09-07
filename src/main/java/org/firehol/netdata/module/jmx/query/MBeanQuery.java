@@ -1,80 +1,64 @@
-/*
- * Copyright (C) 2017 Simon Nagl
- *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 package org.firehol.netdata.module.jmx.query;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-
-import lombok.AccessLevel;
-import org.firehol.netdata.model.Dimension;
-
 import lombok.Getter;
-import lombok.Setter;
+import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+
 /**
- * Technical Object which contains information which attributes of an M(X)Bean
- * we collect and where to store the collected values.
+ * MBeanQuery is able to query one attribute of a MBeanServer and update the currentValue of added Dimensions.
+ *
+ * <p>
+ * Supported attributes are
+ *
+ * <ul>
+ *     <li>Simple attributes which return long, int or double</li>
+ *     <li>Composite attributes which may return more than one value at once. For this cases you have to add the attribute in format {@code <attribute_to_query>.<key_of_the_result_to_store>}</li>
+ * </ul>
+ * </p>
  */
 @Getter
-@Setter
 public abstract class MBeanQuery {
+    private final ObjectName name;
 
-    private ObjectName name;
+    private final String attribute;
 
-    private String attribute;
-
-    @Setter(AccessLevel.NONE)
-    private List<Dimension> dimensions = new LinkedList<>();
-
-    MBeanQuery(ObjectName name, String attribute) {
+    MBeanQuery(final ObjectName name, final String attribute) {
         this.name = name;
         this.attribute = attribute;
     }
 
-    public static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
-        if (attributeType.isAssignableFrom(Double.class)) {
+    static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
+        if (CompositeData.class.isAssignableFrom(attributeType)) {
+            return new MBeanCompositeDataQuery(name, attribute);
+        }
+
+        if (Double.class.isAssignableFrom(attributeType)) {
             return new MBeanDoubleQuery(name, attribute);
         }
 
-        if (attributeType.isAssignableFrom(Integer.class)) {
+        if (Integer.class.isAssignableFrom(attributeType)) {
             return new MBeanIntegerQuery(name, attribute);
         }
 
         return new MBeanLongQuery(name, attribute);
     }
 
-    public void addDimension(Dimension dimension) {
-        this.dimensions.add(dimension);
+    public static MBeanQuery newInstance(final MBeanServerConnection mBeanServer, final ObjectName mBeanName, final String attribute) throws JmxMBeanServerQueryException {
+        final String mBeanAttribute = attribute.split("\\.", 2)[0];
+
+        final Object testQueryResult = MBeanServerUtils.getAttribute(mBeanServer, mBeanName, mBeanAttribute);
+
+        return MBeanQuery.newInstance(mBeanName, mBeanAttribute, testQueryResult.getClass());
     }
 
-    public void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException {
-        Long result = toLong(MBeanServerUtils.getAttribute(mBeanServer, this.name, this.attribute));
+    public abstract void addDimension(Dimension dimension, String attribute);
 
-        dimensions.forEach(dimension -> dimension.setCurrentValue(result));
-    }
+    public abstract void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException;
 
-    protected abstract long toLong(final Object queryResult);
-
-
+    public abstract java.util.List<Dimension> getDimensions();
 }

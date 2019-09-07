@@ -36,7 +36,9 @@ public class JmxDimensionConfiguration {
 	private String from;
 
 	/**
-	 * jmxBean property
+	 * JmxBean property.
+	 *
+	 * To access a property of a CompositeData use <code>property.compositeDataKey</code>
 	 */
 	private String value;
 
