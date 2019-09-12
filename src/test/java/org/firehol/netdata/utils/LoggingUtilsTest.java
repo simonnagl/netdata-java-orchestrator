@@ -42,7 +42,9 @@ public class LoggingUtilsTest {
 		String message = LoggingUtils.buildMessage(exception);
 
 		// Verify
-		assertEquals("[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.", message);
+		assertEquals(
+				"[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
+				message);
 	}
 
 	@Test
@@ -89,7 +91,8 @@ public class LoggingUtilsTest {
 		Supplier<String> messageSupplier = LoggingUtils.getMessageSupplier(exception);
 
 		// Verify
-		assertEquals("[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
+		assertEquals(
+				"[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
 				messageSupplier.get());
 	}
 

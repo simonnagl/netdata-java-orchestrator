@@ -15,37 +15,37 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MBeanServerUtilsTest {
 
-    @Mock
-    private MBeanServerConnection mBeanServer;
+	@Mock
+	private MBeanServerConnection mBeanServer;
 
-    @Test
-    public void testGetAttribute() throws MalformedObjectNameException, AttributeNotFoundException,
-            InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
-        // Static Objects
-        ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
-        String attribute = "attribute";
+	@Test
+	public void testGetAttribute() throws MalformedObjectNameException, AttributeNotFoundException,
+			InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
+		// Static Objects
+		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
+		String attribute = "attribute";
 
-        // Mock
-        when(mBeanServer.getAttribute(name, attribute)).thenReturn(1234L);
+		// Mock
+		when(mBeanServer.getAttribute(name, attribute)).thenReturn(1234L);
 
-        // Test
-        Object value = MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
+		// Test
+		Object value = MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
 
-        // Verify
-        assertEquals(1234L, value);
-    }
+		// Verify
+		assertEquals(1234L, value);
+	}
 
-    @Test(expected = JmxMBeanServerQueryException.class)
-    public void testGetAttributeFailure() throws MalformedObjectNameException, AttributeNotFoundException,
-            InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
-        // Static Objects
-        ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
-        String attribute = "attribute";
+	@Test(expected = JmxMBeanServerQueryException.class)
+	public void testGetAttributeFailure() throws MalformedObjectNameException, AttributeNotFoundException,
+			InstanceNotFoundException, MBeanException, ReflectionException, IOException, JmxMBeanServerQueryException {
+		// Static Objects
+		ObjectName name = new ObjectName("org.firehol.netdata.module.jmx", "key", "value");
+		String attribute = "attribute";
 
-        // Mock
-        when(mBeanServer.getAttribute(name, attribute)).thenThrow(new AttributeNotFoundException());
+		// Mock
+		when(mBeanServer.getAttribute(name, attribute)).thenThrow(new AttributeNotFoundException());
 
-        // Test
-        MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
-    }
+		// Test
+		MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
+	}
 }

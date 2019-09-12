@@ -9,15 +9,18 @@ import org.junit.Test;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 public class UtilsTest {
-    @Test
-    public void testUtils() {
-        JavaClasses importedClasses = new ClassFileImporter().importPackages("org.firehol");
+	@Test
+	public void testUtils() {
+		JavaClasses importedClasses = new ClassFileImporter().importPackages("org.firehol");
 
-        final ArchRule rule = classes().that().haveSimpleNameEndingWith("Utils")
-                .should().haveModifier(JavaModifier.FINAL)
-                .andShould().haveOnlyPrivateConstructors();
+		final ArchRule rule = classes().that()
+				.haveSimpleNameEndingWith("Utils")
+				.should()
+				.haveModifier(JavaModifier.FINAL)
+				.andShould()
+				.haveOnlyPrivateConstructors();
 
-        rule.check(importedClasses);
-    }
+		rule.check(importedClasses);
+	}
 
 }

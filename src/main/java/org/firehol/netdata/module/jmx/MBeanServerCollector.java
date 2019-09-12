@@ -67,8 +67,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * Creates an MBeanServerCollector.
 	 *
 	 * <p>
-	 * <b>Warning:</b> Only use this when you do not want to close the underlying
-	 * JMXConnetor when closing the generated MBeanServerCollector.
+	 * <b>Warning:</b> Only use this when you do not want to close the
+	 * underlying JMXConnetor when closing the generated MBeanServerCollector.
 	 * </p>
 	 *
 	 * @param configuration
@@ -85,8 +85,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * Creates an MBeanServerCollector.
 	 *
 	 * <p>
-	 * Calling {@link #close()}} on the resulting {@code MBeanServerCollector} closes
-	 * {@code jmxConnector} too.
+	 * Calling {@link #close()}} on the resulting {@code MBeanServerCollector}
+	 * closes {@code jmxConnector} too.
 	 * </p>
 	 *
 	 * @param configuration
@@ -105,7 +105,8 @@ public class MBeanServerCollector implements Collector, Closeable {
 	 * </p>
 	 *
 	 * <p>
-	 * This attribute can be used as a unique identifier of the underlying JMX agent
+	 * This attribute can be used as a unique identifier of the underlying JMX
+	 * agent
 	 * </p>
 	 *
 	 * @return the name representing the Java virtual machine of the queried
@@ -134,10 +135,9 @@ public class MBeanServerCollector implements Collector, Closeable {
 		}
 
 		// Error handling
-		throw new JmxMBeanServerQueryException(
-				LoggingUtils.buildMessage("Expected attribute '", runtimeNameAttributeName, " 'of MBean '",
-						runtimeMBeanName, "' to return a string. Instead it returned a '",
-						attribute.getClass().getSimpleName(), "'."));
+		throw new JmxMBeanServerQueryException(LoggingUtils.buildMessage("Expected attribute '",
+				runtimeNameAttributeName, " 'of MBean '", runtimeMBeanName,
+				"' to return a string. Instead it returned a '", attribute.getClass().getSimpleName(), "'."));
 
 	}
 
@@ -158,31 +158,33 @@ public class MBeanServerCollector implements Collector, Closeable {
 					try {
 						objectName = ObjectName.getInstance(dimensionConfig.getFrom());
 					} catch (MalformedObjectNameException e) {
-						throw new JmxMBeanServerQueryException("'" + dimensionConfig.getFrom() + "' is no valid JMX ObjectName", e);
+						throw new JmxMBeanServerQueryException(
+								"'" + dimensionConfig.getFrom() + "' is no valid JMX ObjectName", e);
 					} catch (NullPointerException e) {
 						throw new JmxMBeanServerQueryException("'' is no valid JMX OBjectName", e);
 					}
 
 					// Initialize Query Info if needed
-					mBeanQuery = getMBeanQueryForName(objectName, dimensionConfig.getValue()).orElse(addNewMBeanQuery(objectName, dimensionConfig.getValue()));
+					mBeanQuery = getMBeanQueryForName(objectName, dimensionConfig.getValue())
+							.orElse(addNewMBeanQuery(objectName, dimensionConfig.getValue()));
 				} catch (JmxMBeanServerQueryException e) {
 					log.warning(LoggingUtils.buildMessage("Could not query one dimension. Skipping...", e));
 					continue;
 				}
 
-                // Initialize Dimension
-                final Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
+				// Initialize Dimension
+				final Dimension dimension = initializeDimension(chartConfig, dimensionConfig);
 
 				try {
 					mBeanQuery.addDimension(dimension, dimensionConfig.getValue());
 				} catch (JmxMBeanServerQueryException e) {
-                    log.warning(LoggingUtils.buildMessage("Could not query dimension " + dimension.getName() + ". Skippint...", e));
-                    continue;
+					log.warning(LoggingUtils
+							.buildMessage("Could not query dimension " + dimension.getName() + ". Skippint...", e));
+					continue;
 				}
 
 				chart.getAllDimension().add(dimension);
-            }
-
+			}
 
 			allChart.add(chart);
 		}
@@ -191,7 +193,10 @@ public class MBeanServerCollector implements Collector, Closeable {
 	}
 
 	private Optional<MBeanQuery> getMBeanQueryForName(final ObjectName objectName, final String attribute) {
-		return allMBeanQuery.stream().filter(mBeanQuery -> mBeanQuery.getName().equals(objectName) && mBeanQuery.getAttribute().equals(attribute)).findAny();
+		return allMBeanQuery.stream()
+				.filter(mBeanQuery -> mBeanQuery.getName().equals(objectName)
+						&& mBeanQuery.getAttribute().equals(attribute))
+				.findAny();
 	}
 
 	Chart initializeChart(JmxChartConfiguration config) {
@@ -211,8 +216,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 		return chart;
 	}
 
-	Dimension initializeDimension(JmxChartConfiguration chartConfig,
-								  JmxDimensionConfiguration dimensionConfig) {
+	Dimension initializeDimension(JmxChartConfiguration chartConfig, JmxDimensionConfiguration dimensionConfig) {
 		Dimension dimension = new Dimension();
 		dimension.setId(dimensionConfig.getName());
 		dimension.setName(dimensionConfig.getName());
@@ -220,15 +224,15 @@ public class MBeanServerCollector implements Collector, Closeable {
 		dimension.setMultiplier(dimensionConfig.getMultiplier());
 		dimension.setDivisor(dimensionConfig.getDivisor());
 
-
 		return dimension;
 	}
 
-	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName) throws JmxMBeanServerQueryException {
+	private MBeanQuery addNewMBeanQuery(final ObjectName objectName, final String valueName)
+			throws JmxMBeanServerQueryException {
 		final MBeanQuery query = MBeanQuery.newInstance(mBeanServer, objectName, valueName);
-        allMBeanQuery.add(query);
-        return query;
-    }
+		allMBeanQuery.add(query);
+		return query;
+	}
 
 	Object getAttribute(ObjectName name, String attribute) throws JmxMBeanServerQueryException {
 		return MBeanServerUtils.getAttribute(mBeanServer, name, attribute);
@@ -246,8 +250,7 @@ public class MBeanServerCollector implements Collector, Closeable {
 			} catch (JmxMBeanServerQueryException e) {
 				// Stop collecting this value.
 				log.warning(LoggingUtils.buildMessage(
-						"Stop collection value '" + query.getAttribute() + "' of '" + query.getName() + "'.",
-						e));
+						"Stop collection value '" + query.getAttribute() + "' of '" + query.getName() + "'.", e));
 				queryIterator.remove();
 			}
 		}

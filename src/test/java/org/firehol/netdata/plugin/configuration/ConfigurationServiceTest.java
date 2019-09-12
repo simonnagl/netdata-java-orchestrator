@@ -18,12 +18,6 @@
 
 package org.firehol.netdata.plugin.configuration;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
 import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
 import org.junit.Before;
@@ -31,6 +25,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import static org.junit.Assert.assertEquals;
 
 public class ConfigurationServiceTest {
 
@@ -60,10 +60,8 @@ public class ConfigurationServiceTest {
 		File testConfigurationFile = tmpFolder.newFile();
 		Files.write(testConfigurationFile.toPath(), "{ \"testProperty\": \"testValue\" }".getBytes());
 
-
 		// Test
-		TestConfiguration testConfig = configService.readConfiguration(testConfigurationFile,
-				TestConfiguration.class);
+		TestConfiguration testConfig = configService.readConfiguration(testConfigurationFile, TestConfiguration.class);
 
 		// Verify
 		assertEquals("testValue", testConfig.testProperty);

@@ -18,19 +18,17 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.firehol.netdata.model.ChartType;
+import org.firehol.netdata.model.DimensionAlgorithm;
+import org.firehol.netdata.module.jmx.JmxModule;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.firehol.netdata.model.ChartType;
-import org.firehol.netdata.model.DimensionAlgorithm;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.firehol.netdata.module.jmx.JmxModule;
-
 /**
- * Configuration scheme of a chart created by the
- * {@link JmxModule}.
+ * Configuration scheme of a chart created by the {@link JmxModule}.
  */
 @Getter
 @Setter
@@ -45,8 +43,8 @@ public class JmxChartConfiguration {
 	 */
 	private String title;
 	/**
-	 * the label of the vertical axis of the chart, all dimensions added to a chart
-	 * should have the same units of measurement
+	 * the label of the vertical axis of the chart, all dimensions added to a
+	 * chart should have the same units of measurement
 	 */
 	private String units;
 	/**
