@@ -27,6 +27,9 @@ public final class LoggingUtils {
 
 	private static void appendMessage(Throwable reason, StringBuilder sb) {
 
+		sb.append('[');
+		sb.append(reason.getClass().getName());
+		sb.append("] ");
 		sb.append(reason.getMessage());
 
 		Throwable detail = reason.getCause();
@@ -77,29 +80,14 @@ public final class LoggingUtils {
 	}
 
 	public static Supplier<String> getMessageSupplier(Throwable reason) {
-		return new Supplier<String>() {
-			@Override
-			public String get() {
-				return buildMessage(reason);
-			}
-		};
+		return () -> buildMessage(reason);
 	}
 
 	public static Supplier<String> getMessageSupplier(String message, Throwable reason) {
-		return new Supplier<String>() {
-			@Override
-			public String get() {
-				return buildMessage(message, reason);
-			}
-		};
+		return () -> buildMessage(message, reason);
 	}
 
 	public static Supplier<String> getMessageSupplier(String... messages) {
-		return new Supplier<String>() {
-			@Override
-			public String get() {
-				return buildMessage(messages);
-			}
-		};
+		return () -> buildMessage(messages);
 	}
 }
