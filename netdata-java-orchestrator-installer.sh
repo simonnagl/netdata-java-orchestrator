@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 source_dir="$(pwd)"
 installer_dir="$(dirname "${0}")"
@@ -273,6 +274,7 @@ progress "Generate netdata-java-orchestrator-uninstaller.sh"
 
 cat >netdata-java-orchestrator-uninstaller.sh <<UNINSTALL
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # this script will uninstall netdata
 
