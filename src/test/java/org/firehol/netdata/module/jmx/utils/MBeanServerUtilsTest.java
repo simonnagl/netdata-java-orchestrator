@@ -1,16 +1,17 @@
 package org.firehol.netdata.module.jmx.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import javax.management.*;
+
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.management.*;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MBeanServerUtilsTest {

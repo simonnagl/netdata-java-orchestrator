@@ -18,6 +18,12 @@
 
 package org.firehol.netdata.plugin.configuration;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
 import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
 import org.junit.Before;
@@ -25,12 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
 
 public class ConfigurationServiceTest {
 

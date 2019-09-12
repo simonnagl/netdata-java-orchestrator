@@ -18,19 +18,21 @@
 
 package org.firehol.netdata.plugin.configuration;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.logging.Logger;
+
 import org.firehol.netdata.Main;
 import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
 import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
 import org.firehol.netdata.utils.LoggingUtils;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.Getter;
 
 public final class ConfigurationService {
 	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.configuration");

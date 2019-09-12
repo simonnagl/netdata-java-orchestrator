@@ -1,9 +1,10 @@
 package org.firehol.netdata.module.jmx.utils;
 
-import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import java.io.IOException;
 
 import javax.management.*;
-import java.io.IOException;
+
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 
 public final class MBeanServerUtils {
 

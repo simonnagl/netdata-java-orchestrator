@@ -18,12 +18,14 @@
 
 package org.firehol.netdata.module.jmx.utils;
 
-import com.sun.tools.attach.VirtualMachine;
-import org.firehol.netdata.utils.LoggingUtils;
-
-import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import javax.management.remote.JMXServiceURL;
+
+import org.firehol.netdata.utils.LoggingUtils;
+
+import com.sun.tools.attach.VirtualMachine;
 
 /**
  * Common methods for operation on a {@link VirtualMachine}.

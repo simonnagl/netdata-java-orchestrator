@@ -18,9 +18,20 @@
 
 package org.firehol.netdata.module.jmx;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
 import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.module.Module;
@@ -36,18 +47,9 @@ import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeIns
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 
 /**
  * Netdata Java Plugin which collects metrics from JMX Servers.

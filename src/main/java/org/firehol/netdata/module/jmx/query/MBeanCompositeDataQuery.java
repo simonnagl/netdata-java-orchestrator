@@ -1,16 +1,17 @@
 package org.firehol.netdata.module.jmx.query;
 
-import org.firehol.netdata.model.Dimension;
-import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
-import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
-
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
+
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 
 class MBeanCompositeDataQuery extends MBeanQuery {
 

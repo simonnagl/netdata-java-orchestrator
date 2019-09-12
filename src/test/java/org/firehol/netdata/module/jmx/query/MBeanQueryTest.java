@@ -1,5 +1,18 @@
 package org.firehol.netdata.module.jmx.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.io.IOException;
+import java.util.Collection;
+
+import javax.management.*;
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeType;
+
 import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
@@ -10,18 +23,6 @@ import org.mockito.ArgumentMatchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import javax.management.*;
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeType;
-import java.io.IOException;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MBeanServerUtils.class)

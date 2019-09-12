@@ -18,12 +18,13 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.firehol.netdata.module.jmx.JmxModule;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.firehol.netdata.module.jmx.JmxModule;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Configuration scheme to configure {@link JmxModule}

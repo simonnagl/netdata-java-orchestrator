@@ -18,15 +18,15 @@
 
 package org.firehol.netdata.plugin.configuration;
 
-import org.firehol.netdata.plugin.configuration.exception.EnvironmentConfigurationException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import org.firehol.netdata.plugin.configuration.exception.EnvironmentConfigurationException;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
 public class EnvironmentConfigurationServiceTest {
 

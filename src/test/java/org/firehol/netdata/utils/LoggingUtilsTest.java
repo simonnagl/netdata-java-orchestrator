@@ -18,12 +18,12 @@
 
 package org.firehol.netdata.utils;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 public class LoggingUtilsTest {
 
