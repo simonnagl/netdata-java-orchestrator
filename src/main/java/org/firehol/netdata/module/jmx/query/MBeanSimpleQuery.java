@@ -18,31 +18,31 @@
 
 package org.firehol.netdata.module.jmx.query;
 
-import java.util.LinkedList;
-import java.util.List;
+import lombok.Getter;
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-
-import lombok.AccessLevel;
-import org.firehol.netdata.model.Dimension;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
-import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
+import java.util.List;
 
 /**
  * A MBeanQuery is responsible to query a attribute of a MBean and place it's value into {@link Dimension}
  */
 @Getter
-public abstract class MBeanSimpleQuery extends MBeanQuery {
+public class MBeanSimpleQuery extends MBeanQuery {
 
 
-    private final List<Dimension> dimensions = new LinkedList<>();
+    private final MBeanValueStore valueStore;
 
-    MBeanSimpleQuery(final ObjectName name, final String attribute) {
-        super(name, attribute);
+    MBeanSimpleQuery(final MBeanServerConnection mBeanServer, final ObjectName name, final String attribute, final MBeanValueStore valueStore) {
+        super(mBeanServer, name, attribute);
+        this.valueStore = valueStore;
+    }
+
+    public List<Dimension> getDimensions() {
+        return valueStore.getAllDimension();
     }
 
     /**
@@ -59,15 +59,12 @@ public abstract class MBeanSimpleQuery extends MBeanQuery {
             throw new IllegalArgumentException(String.format("attribute '%s' must match this.attribute '%s'", attribute, this.getAttribute()));
         }
 
-        this.dimensions.add(dimension);
+        this.valueStore.addDimension(dimension);
     }
 
     @Override
-    public void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException {
-        Long result = toLong(MBeanServerUtils.getAttribute(mBeanServer, this.getName(), this.getAttribute()));
-
-        dimensions.forEach(dimension -> dimension.setCurrentValue(result));
+    public void query() throws JmxMBeanServerQueryException {
+        Object result = MBeanServerUtils.getAttribute(getMBeanServer(), this.getName(), this.getAttribute());
+        valueStore.updateValue(result);
     }
-
-    protected abstract long toLong(final Object queryResult);
 }
