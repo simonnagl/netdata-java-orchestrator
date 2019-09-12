@@ -18,16 +18,17 @@
 
 package org.firehol.netdata.utils;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class AlignToTimeIntervalService {
 	private Logger log = Logger.getLogger("org.firehol.netdata.utils.aligntotimeintervalservice");
 
-	private long intervalInNSec;
+	private final long intervalInNSec;
 	private long lastTimestamp;
 
-	public AlignToTimeIntervalService(long intervalInNSec) {
-		this.intervalInNSec = intervalInNSec;
+	public AlignToTimeIntervalService(long intervalInNSec, final TimeUnit timeUnit) {
+		this.intervalInNSec = timeUnit.toNanos(intervalInNSec);
 		this.lastTimestamp = ClockService.nowMonotonicNSec();
 	}
 
@@ -37,8 +38,10 @@ public class AlignToTimeIntervalService {
 
 		while (now < next) {
 			try {
-				Thread.sleep((next - now) / UnitConversion.MILI_PER_NANO,
-						(int) (next - now) % UnitConversion.MILI_PER_NANO);
+				long delta = next - now;
+
+				Thread.sleep(delta / UnitConversion.MILI_PER_NANO,
+						Math.toIntExact(delta % UnitConversion.MILI_PER_NANO));
 			} catch (InterruptedException e) {
 				log.warning("Interrupted while waiting for next tick.");
 				// We try again here. The worst might happen is a busy wait
