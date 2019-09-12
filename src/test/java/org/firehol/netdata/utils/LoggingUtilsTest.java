@@ -18,12 +18,12 @@
 
 package org.firehol.netdata.utils;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.function.Supplier;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class LoggingUtilsTest {
 
@@ -42,7 +42,7 @@ public class LoggingUtilsTest {
 		String message = LoggingUtils.buildMessage(exception);
 
 		// Verify
-		assertEquals("Something went wrong. Detail: This is the reason. Detail: Here are the details.", message);
+		assertEquals("[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.", message);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class LoggingUtilsTest {
 
 		// Verify
 		assertEquals(
-				"Could not do it. Reason: Something went wrong. Detail: This is the reason. Detail: Here are the details.",
+				"Could not do it. Reason: [java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
 				message);
 	}
 
@@ -89,7 +89,7 @@ public class LoggingUtilsTest {
 		Supplier<String> messageSupplier = LoggingUtils.getMessageSupplier(exception);
 
 		// Verify
-		assertEquals("Something went wrong. Detail: This is the reason. Detail: Here are the details.",
+		assertEquals("[java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
 				messageSupplier.get());
 	}
 
@@ -100,7 +100,7 @@ public class LoggingUtilsTest {
 
 		// Verify
 		assertEquals(
-				"Could not do it. Reason: Something went wrong. Detail: This is the reason. Detail: Here are the details.",
+				"Could not do it. Reason: [java.lang.Exception] Something went wrong. Detail: This is the reason. Detail: Here are the details.",
 				messageSupplier.get());
 
 	}
