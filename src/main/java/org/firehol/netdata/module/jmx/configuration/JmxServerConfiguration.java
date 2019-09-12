@@ -18,12 +18,11 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * Configuration scheme to configure JMX agents to monitor.
@@ -34,7 +33,8 @@ public class JmxServerConfiguration {
 	/**
 	 * JMX Service URL used to connect to the JVM.
 	 * 
-	 * <blockquote> {@code service:jmx:rmi://[host[:port]][urlPath]} </blockquote>
+	 * <blockquote> {@code service:jmx:rmi://[host[:port]][urlPath]}
+	 * </blockquote>
 	 * 
 	 * @see <a href=
 	 *      "https://docs.oracle.com/cd/E19159-01/819-7758/gcnqf/index.html">Oracle

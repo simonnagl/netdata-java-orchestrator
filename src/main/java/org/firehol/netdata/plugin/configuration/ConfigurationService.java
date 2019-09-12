@@ -83,8 +83,8 @@ public final class ConfigurationService {
 	 *            to read
 	 * @param clazz
 	 *            The schema of the configuration.
-	 * @return The configuration read from file, or if it was invalid the default
-	 *         configuration.
+	 * @return The configuration read from file, or if it was invalid the
+	 *         default configuration.
 	 * @throws ConfigurationSchemeInstantiationException
 	 *             if it was not possible to instantiate clazz
 	 */
@@ -129,7 +129,8 @@ public final class ConfigurationService {
 		Path configDir = environmentConfigurationService.getConfigDir().resolve("java.d");
 		Path configFile = configDir.resolve(pluginName + ".conf");
 
-		log.info(": Reading '" + pluginName + "' module configuration file '" + configFile.toFile().getAbsolutePath() + "'");
+		log.info(": Reading '" + pluginName + "' module configuration file '" + configFile.toFile().getAbsolutePath()
+				+ "'");
 		return this.readConfiguration(configFile.toFile(), clazz);
 	}
 }

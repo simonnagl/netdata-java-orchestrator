@@ -18,27 +18,9 @@
 
 package org.firehol.netdata.module.jmx;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.module.Module;
@@ -54,9 +36,18 @@ import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeIns
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Netdata Java Plugin which collects metrics from JMX Servers.
@@ -160,7 +151,7 @@ public class JmxModule implements Module {
 			JMXServiceURL url = new JMXServiceURL(config.getServiceUrl());
 			connection = JMXConnectorFactory.connect(url);
 			MBeanServerConnection server = connection.getMBeanServerConnection();
-            return new MBeanServerCollector(config, server, connection);
+			return new MBeanServerCollector(config, server, connection);
 		} catch (IOException e) {
 			if (connection != null) {
 				ResourceUtils.close(connection);
@@ -307,8 +298,8 @@ public class JmxModule implements Module {
 
 	@Override
 	public Collection<Chart> collectValues() {
-		return allMBeanCollector.stream().map(MBeanServerCollector::collectValues).flatMap(Collection::stream)
-				.collect(Collectors.toList());
+		return allMBeanCollector.stream().map(MBeanServerCollector::collectValues).flatMap(Collection::stream).collect(
+				Collectors.toList());
 	}
 
 	@Override

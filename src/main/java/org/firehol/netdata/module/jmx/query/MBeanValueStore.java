@@ -8,36 +8,36 @@ import java.util.stream.Stream;
 
 public abstract class MBeanValueStore {
 
-    final List<Dimension> allDimension = new ArrayList<>(1);
+	final List<Dimension> allDimension = new ArrayList<>(1);
 
-    MBeanValueStore() {
-    }
+	MBeanValueStore() {
+	}
 
-    public static MBeanValueStore newInstance(Object valueToHandle) {
-        if(valueToHandle instanceof Double) {
-            return new MBeanDoubleStore();
-        } else if(valueToHandle instanceof Integer) {
-            return new MBeanIntegerStore();
-        }
-        return new MBeanLongStore();
-    }
+	public static MBeanValueStore newInstance(Object valueToHandle) {
+		if (valueToHandle instanceof Double) {
+			return new MBeanDoubleStore();
+		} else if (valueToHandle instanceof Integer) {
+			return new MBeanIntegerStore();
+		}
+		return new MBeanLongStore();
+	}
 
-    public void updateValue(final Object value) {
-        final long castResult = toLong(value);
-        allDimension.forEach(dimension -> dimension.setCurrentValue(castResult));
-    }
+	public void updateValue(final Object value) {
+		final long castResult = toLong(value);
+		allDimension.forEach(dimension -> dimension.setCurrentValue(castResult));
+	}
 
-    abstract long toLong(final Object value);
+	abstract long toLong(final Object value);
 
-    public void addDimension(final Dimension dimension) {
-        allDimension.add(dimension);
-    }
+	public void addDimension(final Dimension dimension) {
+		allDimension.add(dimension);
+	}
 
-    public Stream<Dimension> streamAllDimension() {
-        return allDimension.stream();
-    }
+	public Stream<Dimension> streamAllDimension() {
+		return allDimension.stream();
+	}
 
-    public List<Dimension> getAllDimension() {
-        return allDimension;
-    }
+	public List<Dimension> getAllDimension() {
+		return allDimension;
+	}
 }

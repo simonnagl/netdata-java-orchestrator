@@ -18,16 +18,15 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.firehol.netdata.module.jmx.JmxModule;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Configuration scheme to configure
- * {@link JmxModule}
+ * Configuration scheme to configure {@link JmxModule}
  * 
  * @since 1.0.0
  * @author Simon Nagl
@@ -51,9 +50,9 @@ public class JmxPluginConfiguration {
 	 * A list of chart configurations.
 	 * 
 	 * <p>
-	 * Every monitored JMX Servers tries to monitor each chart in this list. If a
-	 * JMX Server does not have the required M(X)Beans we won't try adding it over
-	 * and over again.
+	 * Every monitored JMX Servers tries to monitor each chart in this list. If
+	 * a JMX Server does not have the required M(X)Beans we won't try adding it
+	 * over and over again.
 	 * </p>
 	 */
 	private List<JmxChartConfiguration> commonCharts = new ArrayList<>();
