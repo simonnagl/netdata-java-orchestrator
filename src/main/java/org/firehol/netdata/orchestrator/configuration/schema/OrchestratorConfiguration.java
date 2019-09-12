@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,28 +16,12 @@
  *
  */
 
-package org.firehol.netdata.plugin.configuration.exception;
+package org.firehol.netdata.orchestrator.configuration.schema;
 
-import javax.naming.ConfigurationException;
+import lombok.Getter;
+import lombok.Setter;
 
-public class ParseException extends ConfigurationException {
-	private static final long serialVersionUID = 1383816306854639084L;
-
-	public ParseException() {
-		super();
-	}
-
-	public ParseException(String explanation) {
-		super(explanation);
-	}
-
-	public ParseException(Throwable cause) {
-		this.setRootCause(cause);
-	}
-
-	public ParseException(String explanation, Throwable cause) {
-		super(explanation);
-		this.setRootCause(cause);
-	}
-
+@Getter
+@Setter
+public final class OrchestratorConfiguration {
 }

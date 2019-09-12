@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -51,6 +51,6 @@ public class JmxServerConfiguration {
 
 	@JsonIgnore
 	// This property is not part of the configuration scheme.
-	// This is a technical property used by the plugin.
+	// This is a technical property used by the module.
 	private List<JmxChartConfiguration> charts;
 }

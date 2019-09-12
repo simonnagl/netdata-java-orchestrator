@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -36,14 +36,14 @@ import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.module.Module;
 import org.firehol.netdata.module.jmx.configuration.JmxChartConfiguration;
-import org.firehol.netdata.module.jmx.configuration.JmxPluginConfiguration;
+import org.firehol.netdata.module.jmx.configuration.JmxModuleConfiguration;
 import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerConnectionException;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.exception.VirtualMachineConnectionException;
 import org.firehol.netdata.module.jmx.utils.VirtualMachineUtils;
-import org.firehol.netdata.plugin.configuration.ConfigurationService;
-import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
+import org.firehol.netdata.orchestrator.configuration.ConfigurationService;
+import org.firehol.netdata.orchestrator.configuration.exception.ConfigurationSchemeInstantiationException;
 import org.firehol.netdata.utils.LoggingUtils;
 import org.firehol.netdata.utils.ResourceUtils;
 
@@ -52,11 +52,11 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
 /**
- * Netdata Java Plugin which collects metrics from JMX Servers.
+ * JmxModule collects metrics from JMX Servers.
  * 
  * <p>
- * The plugin also attatches to the local JMX server to monitor the plugin
- * daemon.
+ * The module also attatches to the local JMX server to monitor the orchestrator
+ * process.
  * </p>
  * 
  * @see <a href=
@@ -70,7 +70,7 @@ public class JmxModule implements Module {
 
 	private final ConfigurationService configurationService;
 
-	private JmxPluginConfiguration configuration;
+	private JmxModuleConfiguration configuration;
 
 	private final List<MBeanServerCollector> allMBeanCollector = new ArrayList<>();
 
@@ -92,9 +92,9 @@ public class JmxModule implements Module {
 
 	private void readConfiguration() throws InitializationException {
 		try {
-			configuration = configurationService.readPluginConfiguration("jmx", JmxPluginConfiguration.class);
+			configuration = configurationService.readModuleConfiguration("jmx", JmxModuleConfiguration.class);
 		} catch (ConfigurationSchemeInstantiationException e) {
-			throw new InitializationException("Could not read jmx plugin configuration", e);
+			throw new InitializationException("Could not read jmx module configuration", e);
 		}
 	}
 
@@ -166,7 +166,7 @@ public class JmxModule implements Module {
 	private void connectToLocalProcess() {
 		JmxServerConfiguration localConfiguration = new JmxServerConfiguration();
 		localConfiguration.setCharts(configuration.getCommonCharts());
-		localConfiguration.setName("JavaPluginDaemon");
+		localConfiguration.setName("JavaPlugin");
 
 		MBeanServerCollector collector = new MBeanServerCollector(localConfiguration,
 				ManagementFactory.getPlatformMBeanServer());
@@ -278,7 +278,7 @@ public class JmxModule implements Module {
 			try {
 				allChart.addAll(mBeanCollector.initialize());
 			} catch (InitializationException e) {
-				log.warning("Could not initialize JMX plugin " + mBeanCollector.getMBeanServer().toString());
+				log.warning("Could not initialize JMX orchestrator " + mBeanCollector.getMBeanServer().toString());
 				ResourceUtils.close(mBeanCollector);
 				mBeanCollectorIterator.remove();
 			}

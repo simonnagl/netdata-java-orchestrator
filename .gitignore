@@ -18,9 +18,9 @@ hs_err_pid*
 # Maven
 target/
 
-# netdata-plugin-java-daemon-installer.sh
-netdata-plugin-java-daemon-installer.log
-netdata-plugin-java-daemon-uninstaller.sh
+# netdata-java-orchestrator-installer.sh
+netdata-java-orchestrator-installer.log
+netdata-java-orchestrator-uninstaller.sh
 
 # macOS
 .DS_Store

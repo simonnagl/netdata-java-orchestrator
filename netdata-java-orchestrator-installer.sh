@@ -28,7 +28,7 @@ else
     source "${source_dir}/installer/functions.sh" || exit 1
 fi
 
-run_logfile="netdata-plugin-java-daemon-installer.log"
+run_logfile="netdata-java-orchestrator-installer.log"
 
 umask 002
 
@@ -52,7 +52,7 @@ Valid <installer options> are:
    --install /PATH/TO/INSTALL
 
         If you give: --install /opt
-        netdata-plugin-java-daemon will be installed in /opt/netdata
+        netdata-java-orchestrator will be installed in /opt/netdata
         Use the same value you used for netdata-installer.sh.
 
    --dont-start-it
@@ -107,16 +107,16 @@ do
     fi
 done
 
-netdata_banner "java plugin daemon with jmx monitoring"
+netdata_banner "java orchestrator with jmx monitoring"
 cat <<BANNER1
 
-  You are about to build and install netdata-plugin-java-daemon to your system.
+  You are about to build and install netdata-java-orchestrator to your system.
   Please make shure you called the installer with the same privileges and options you used to install netdata.
 
   It will be installed at these locations:
 
    - executable     at ${TPUT_CYAN}${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin${TPUT_RESET}
-   - jar file       at ${TPUT_CYAN}${NETDATA_PREFIX}/usr/netdata-plugin-java-daemon/java-daemon.jar${TPUT_RESET}
+   - jar file       at ${TPUT_CYAN}${NETDATA_PREFIX}/usr/netdata-java-orchestrator/java-orchestrator.jar${TPUT_RESET}
    - config files   in ${TPUT_CYAN}${NETDATA_PREFIX}/etc/netdata${TPUT_RESET}
 BANNER1
 
@@ -153,7 +153,7 @@ if [ "${UID}" -ne 0 ]
   
   ${TPUT_RED}${TPUT_BOLD}Sorry! This will fail!${TPUT_RESET}
   
-  You are attempting to install netdata-plugin-java-daemon as non-root, but you plan
+  You are attempting to install netdata-java-orchestrator as non-root, but you plan
   to install it in system paths.
   
   Please set an installation prefix, like this:
@@ -174,9 +174,9 @@ NONROOTNOPREFIX
         cat <<NONROOT
  
   ${TPUT_RED}${TPUT_BOLD}IMPORTANT${TPUT_RESET}:
-  You are about to install netdata-plugin-java-daemon as a non-root user.
+  You are about to install netdata-java-orchestrator as a non-root user.
   
-  If you installing netdata-plugin-java-daemon permanently on your system, run
+  If you installing netdata-java-orchestrator permanently on your system, run
   the installer like this:
   
      ${TPUT_YELLOW}${TPUT_BOLD}sudo $0 ${@}${TPUT_RESET}
@@ -189,9 +189,9 @@ if [ ${DONOTWAIT} -eq 0 ]
     then
     if [ ! -z "${NETDATA_PREFIX}" ]
         then
-        eval "read >&2 -ep \$'\001${TPUT_BOLD}${TPUT_GREEN}\002Press ENTER to build and install netdata-plugin-java-daemon to \'\001${TPUT_CYAN}\002${NETDATA_PREFIX}\001${TPUT_YELLOW}\002\'\001${TPUT_RESET}\002 > ' -e -r REPLY"
+        eval "read >&2 -ep \$'\001${TPUT_BOLD}${TPUT_GREEN}\002Press ENTER to build and install netdata-java-orchestrator to \'\001${TPUT_CYAN}\002${NETDATA_PREFIX}\001${TPUT_YELLOW}\002\'\001${TPUT_RESET}\002 > ' -e -r REPLY"
     else
-        eval "read >&2 -ep \$'\001${TPUT_BOLD}${TPUT_GREEN}\002Press ENTER to build and install netdata-plugin-java-daemon to your system\001${TPUT_RESET}\002 > ' -e -r REPLY"
+        eval "read >&2 -ep \$'\001${TPUT_BOLD}${TPUT_GREEN}\002Press ENTER to build and install netdata-java-orchestrator to your system\001${TPUT_RESET}\002 > ' -e -r REPLY"
     fi
 fi
 
@@ -201,11 +201,11 @@ build_error() {
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sorry! netdata-plugin-java-daemon failed to build...
+Sorry! netdata-java-orchestrator failed to build...
 
 If you cannot figure out why, ask for help at github:
 
-   https://github.com/simonnagl/netdata-plugin-java-daemon/issues
+   https://github.com/simonnagl/netdata-java-orchestrator/issues
 
 
 EOF
@@ -219,20 +219,20 @@ progress "Cleanup compilation directory"
 [ -d target ] && run ./mvnw -o clean
 
 # -----------------------------------------------------------------------------
-progress "Compile and package netdata-plugin-java-daemon"
+progress "Compile and package netdata-java-orchestrator"
 
 run ./mvnw -o -T 1C package || build_error
 
 # -----------------------------------------------------------------------------
-progress "Install netdata-plugin-java-daemon"
+progress "Install netdata-java-orchestrator"
 
 # Create directory for jar if necessary
-[ -d "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon" ] || run mkdir -p "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon"
+[ -d "${NETDATA_PREFIX}/usr/libexec/netdata-java-orchestrator" ] || run mkdir -p "${NETDATA_PREFIX}/usr/libexec/netdata-java-orchestrator"
 # Copy the jar
-run cp target/java-daemon-*.jar "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar"
+run cp target/java-orchestrator-*.jar "${NETDATA_PREFIX}/usr/libexec/netdata-java-orchestrator/java-orchestrator.jar"
 
 # Write the executable
-run echo "exec java -Djava.util.logging.SimpleFormatter.format='%1\$tF %1\$TT: java.d: %4\$s: %3\$s: %5\$s%6\$s%n' -jar ${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon/java-daemon.jar \$@" \
+run echo "exec java -Djava.util.logging.SimpleFormatter.format='%1\$tF %1\$TT: java.d: %4\$s: %3\$s: %5\$s%6\$s%n' -jar ${NETDATA_PREFIX}/usr/libexec/netdata-java-orchestrator/java-orchestrator.jar \$@" \
         > ${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin
 run chmod 0755 "${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin"
 
@@ -269,16 +269,16 @@ if [ ${DONOTSTART} -ne 1 ]
 fi
 
 # -----------------------------------------------------------------------------
-progress "Generate netdata-plugin-java-daemon-uninstaller.sh"
+progress "Generate netdata-java-orchestrator-uninstaller.sh"
 
-cat >netdata-plugin-java-daemon-uninstaller.sh <<UNINSTALL
+cat >netdata-java-orchestrator-uninstaller.sh <<UNINSTALL
 #!/usr/bin/env bash
 
 # this script will uninstall netdata
 
 if [ "\$1" != "--force" ]
     then
-    echo >&2 "This script will REMOVE netdata-plugin-java-daeimon from your system."
+    echo >&2 "This script will REMOVE netdata-java-orchestrator from your system."
     echo >&2 "Run it again with --force to do it."
     exit 1
 fi
@@ -292,24 +292,24 @@ deletedir() {
     fi
 }
 
-deletedir "${NETDATA_PREFIX}/usr/libexec/netdata-plugin-java-daemon"
+deletedir "${NETDATA_PREFIX}/usr/libexec/netdata-java-orchestrator"
 rm -f ${NETDATA_PREFIX}/usr/libexec/netdata/plugins.d/java.d.plugin
 rm -f ${NETDATA_PREFIX}/etc/netdata/java.d.conf
 deletedir "${NETDATA_PREFIX}/etc/netdata/java.d"
 
 UNINSTALL
-chmod 750 netdata-plugin-java-daemon-uninstaller.sh
+chmod 750 netdata-java-orchestrator-uninstaller.sh
 
 # -----------------------------------------------------------------------------
-progress "Basic netdata-plugin-java-daemon instructions"
+progress "Basic netdata-java-orchestrator instructions"
 
 cat <<END
 
-netdata-plugin-java-daemon must be called by netdata.
+netdata-java-orchestrator must be called by netdata.
 You may need to restart netdata.
 
 END
-echo >&2 "Uninstall script generated: ${TPUT_RED}${TPUT_BOLD}./netdata-plugin-java-daemon-uninstaller.sh${TPUT_RESET}"
+echo >&2 "Uninstall script generated: ${TPUT_RED}${TPUT_BOLD}./netdata-java-orchestrator-uninstaller.sh${TPUT_RESET}"
 
 # -----------------------------------------------------------------------------
 echo >&2

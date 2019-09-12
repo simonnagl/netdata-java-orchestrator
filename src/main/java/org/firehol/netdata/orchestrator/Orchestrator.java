@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin;
+package org.firehol.netdata.orchestrator;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,16 +32,15 @@ import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.module.Module;
 import org.firehol.netdata.utils.AlignToTimeIntervalService;
 import org.firehol.netdata.utils.LoggingUtils;
-import org.firehol.netdata.utils.UnitConversion;
 
-public class Plugin implements Collector {
-	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+public class Orchestrator implements Collector {
+	private static final Logger log = Logger.getLogger("org.firehol.netdata.orchestrator");
 
 	private final int updateEverySecond;
 
 	private final List<Module> modules;
 
-	public Plugin(int updateEveryInSeconds, List<Module> modules) {
+	public Orchestrator(int updateEveryInSeconds, List<Module> modules) {
 		this.updateEverySecond = updateEveryInSeconds;
 		this.modules = modules;
 	}
@@ -58,7 +57,7 @@ public class Plugin implements Collector {
 				Printer.initializeChart(chart);
 			}
 		} catch (Exception e) {
-			Main.exit(LoggingUtils.buildMessage("Could not initialize. Disabling Java Plugin Daemon.", e));
+			Main.exit(LoggingUtils.buildMessage("Could not initialize. Disabling Java Orchestrator.", e));
 		}
 
 	}

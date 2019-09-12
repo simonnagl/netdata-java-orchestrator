@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -26,13 +26,13 @@ import java.util.logging.Logger;
 import org.firehol.netdata.exception.UnreachableCodeException;
 import org.firehol.netdata.module.Module;
 import org.firehol.netdata.module.jmx.JmxModule;
-import org.firehol.netdata.plugin.Plugin;
-import org.firehol.netdata.plugin.Printer;
-import org.firehol.netdata.plugin.configuration.ConfigurationService;
+import org.firehol.netdata.orchestrator.Orchestrator;
+import org.firehol.netdata.orchestrator.Printer;
+import org.firehol.netdata.orchestrator.configuration.ConfigurationService;
 import org.firehol.netdata.utils.LoggingUtils;
 
 public final class Main {
-	private static final Logger log = Logger.getLogger("org.firehol.netdata.plugin");
+	private static final Logger log = Logger.getLogger("org.firehol.netdata.orchestrator");
 
 	private static List<Module> modules = Collections.emptyList();
 
@@ -42,7 +42,7 @@ public final class Main {
 	public static void main(final String[] args) {
 		int updateEverySecond = getUpdateEveryInSecondsFomCommandLineFailFast(args);
 		configureModules();
-		new Plugin(updateEverySecond, modules).start();
+		new Orchestrator(updateEverySecond, modules).start();
 	}
 
 	static int getUpdateEveryInSecondsFomCommandLineFailFast(final String[] args) {
