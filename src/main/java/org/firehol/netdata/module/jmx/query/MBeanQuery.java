@@ -8,6 +8,7 @@ import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
+import java.util.List;
 
 /**
  * MBeanQuery is able to query one attribute of a MBeanServer and update the currentValue of added Dimensions.
@@ -27,38 +28,28 @@ public abstract class MBeanQuery {
 
     private final String attribute;
 
-    MBeanQuery(final ObjectName name, final String attribute) {
+    private final MBeanServerConnection mBeanServer;
+
+    MBeanQuery(final MBeanServerConnection mBeanServer, final ObjectName name, final String attribute) {
+        this.mBeanServer = mBeanServer;
         this.name = name;
         this.attribute = attribute;
     }
 
-    static MBeanQuery newInstance(final ObjectName name, final String attribute, final Class<?> attributeType) {
-        if (CompositeData.class.isAssignableFrom(attributeType)) {
-            return new MBeanCompositeDataQuery(name, attribute);
-        }
-
-        if (Double.class.isAssignableFrom(attributeType)) {
-            return new MBeanDoubleQuery(name, attribute);
-        }
-
-        if (Integer.class.isAssignableFrom(attributeType)) {
-            return new MBeanIntegerQuery(name, attribute);
-        }
-
-        return new MBeanLongQuery(name, attribute);
-    }
-
     public static MBeanQuery newInstance(final MBeanServerConnection mBeanServer, final ObjectName mBeanName, final String attribute) throws JmxMBeanServerQueryException {
         final String mBeanAttribute = attribute.split("\\.", 2)[0];
+        final Object queryResult = MBeanServerUtils.getAttribute(mBeanServer, mBeanName, mBeanAttribute);
 
-        final Object testQueryResult = MBeanServerUtils.getAttribute(mBeanServer, mBeanName, mBeanAttribute);
+        if (CompositeData.class.isAssignableFrom(queryResult.getClass())) {
+            return new MBeanCompositeDataQuery(mBeanServer, mBeanName, mBeanAttribute);
+        }
 
-        return MBeanQuery.newInstance(mBeanName, mBeanAttribute, testQueryResult.getClass());
+        return new MBeanSimpleQuery(mBeanServer, mBeanName, mBeanAttribute, MBeanValueStore.newInstance(queryResult));
     }
 
-    public abstract void addDimension(Dimension dimension, String attribute);
+    public abstract void addDimension(Dimension dimension, String attribute) throws JmxMBeanServerQueryException;
 
-    public abstract void query(MBeanServerConnection mBeanServer) throws JmxMBeanServerQueryException;
+    public abstract void query() throws JmxMBeanServerQueryException;
 
-    public abstract java.util.List<Dimension> getDimensions();
+    public abstract List<Dimension> getDimensions();
 }
