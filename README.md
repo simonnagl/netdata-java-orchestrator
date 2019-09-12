@@ -1,18 +1,12 @@
-# Important: Deprecation Note
-
-This repository is outdated. I will not merge any pull requests here. I continue developing this plugin on my [netdata fork](https://github.com/simonnagl/netdata). For issues and requests for the java plugin you can use the [netdata issue tracker](https://github.com/firehol/netdata/issues). If you want to contribute with code please open a pull request to the fork.
-
-As soon as the fork gets stable I can merge it directly to netdata.
-
-# Netdata Java Plugin Daemon
+# Netdata Java Orchestrator
 
 [![Build Status](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon.svg?branch=master)](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=badger)
 
-netdata-java-plugin-daeimon is a [netdata](https://github.com/firehol/netdata) plugin which can collect any data in java and send it to netdata.
+netdata-java-orchestrator is a [netdata](https://github.com/firehol/netdata) plugin which can collect any data in java and send it to netdata.
 
-## Java Plugins
+## Java Modules
 
 - JMX Collector
 
@@ -30,17 +24,17 @@ netdata-java-plugin-daeimon is a [netdata](https://github.com/firehol/netdata) p
 - netdata
 - JRE 8.x
 
-### 2. Install netdata-plugin-java-daemon
+### 2. Install netdata-java-orchestrator
 
-Do this to install and run netdata-plugin-java:
+Do this to install and run netdata-java-orchestrator:
 
 ```(sh)
-# download it - the directory 'netdata-plugin-java-daemon' will be created
-git clone https://github.com/simonnagl/netdata-plugin-java-daemon.git --depth=1
-cd netdata-plugin-java-daemon
+# download it - the directory 'netdata-java-orchestrator' will be created
+git clone https://github.com/simonnagl/netdata-java-orchestrator.git --depth=1
+cd netdata-java-orchestrator
 
 # run script with root privileges to build and install the plugin and restart netdata.
-netdata-plugin-java-daemon-installer.sh
+netdata-java-orchestrator-installer.sh
 ````
 
 ## Configuration
@@ -48,15 +42,13 @@ netdata-plugin-java-daemon-installer.sh
 Configuration files contain JSON Objects.
 Additional to the JSON specification Java/C++ style comments (both '/'+'*' and '//' varieties) are allowed.
 
-Each plugin get's it's own configuration file. The standard configuration should have enogh examples and comments to extend or adapt it. The table below references the classes which describe the JSON schemes of the configuration files.
+Each module get's it's own configuration file. The standard configuration should have enogh examples and comments to extend or adapt it. The table below references the classes which describe the JSON schemes of the configuration files.
 
 File                         | Schema | Purpose
 ---------------------------- | ------ | -------
-/etc/netdata/java.d/jmx.conf | [JmxPluginConfiguration](https://github.com/simonnagl/netdata-plugin-java-daemon/blob/master/src/main/java/org/firehol/netdata/plugin/jmx/configuration/JmxPluginConfiguration.java)| JMX plugin configuration
+/etc/netdata/java.d/jmx.conf | [JmxModuleConfiguration](https://github.com/simonnagl/netdata-java-orchestrator/blob/master/src/main/java/org/firehol/netdata/module/jmx/configuration/JmxModuleConfiguration.java)| JMX module configuration
 
 
 ## License
 
-netdata-plugin-java-daemon is [GPLv3+](LICENSE).
-
-It re-distributes other open-source tools and libraries. Please check the [third party licenses](LICENSE-REDISTRIBUTED.md).
+netdata-java-orchestrator is [GPLv3+](LICENSE).

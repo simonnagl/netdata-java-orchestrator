@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.configuration;
+package org.firehol.netdata.orchestrator.configuration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
-import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
+import org.firehol.netdata.orchestrator.configuration.exception.ConfigurationSchemeInstantiationException;
+import org.firehol.netdata.orchestrator.configuration.schema.OrchestratorConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -116,10 +116,10 @@ public class ConfigurationServiceTest {
 		Files.write(testConfigurationFile.toPath(), "{ }".getBytes());
 
 		// Test
-		PluginDaemonConfiguration testConfig = configService.readConfiguration(testConfigurationFile,
-				PluginDaemonConfiguration.class);
+		OrchestratorConfiguration testConfig = configService.readConfiguration(testConfigurationFile,
+				OrchestratorConfiguration.class);
 
 		// Verify
-		assertEquals(PluginDaemonConfiguration.class, testConfig.getClass());
+		assertEquals(OrchestratorConfiguration.class, testConfig.getClass());
 	}
 }

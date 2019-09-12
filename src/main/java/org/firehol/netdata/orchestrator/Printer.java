@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin;
+package org.firehol.netdata.orchestrator;
 
 import org.firehol.netdata.model.Chart;
 import org.firehol.netdata.model.Dimension;
@@ -163,8 +163,8 @@ public final class Printer {
 	}
 
 	/**
-	 * Tell the caller to disable the plugin. This will prevent it from
-	 * restarting the plugin.
+	 * Tell the caller to disable the orchestrator. This will prevent it from
+	 * restarting the orchestrator.
 	 */
 	public static void disable() {
 		print("DISABLE");

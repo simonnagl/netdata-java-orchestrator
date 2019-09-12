@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,7 +18,7 @@
 
 package org.firehol.netdata.module.jmx.exception;
 
-public class JmxMBeanServerQueryException extends JmxPluginException {
+public class JmxMBeanServerQueryException extends JmxModuleException {
 	private static final long serialVersionUID = 5480135001434254831L;
 
 	public JmxMBeanServerQueryException(String message, Throwable cause) {

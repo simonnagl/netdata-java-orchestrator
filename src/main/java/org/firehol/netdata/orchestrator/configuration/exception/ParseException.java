@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,19 +16,28 @@
  *
  */
 
-package org.firehol.netdata.plugin;
+package org.firehol.netdata.orchestrator.configuration.exception;
 
-import java.util.Collection;
+import javax.naming.ConfigurationException;
 
-import org.firehol.netdata.exception.InitializationException;
-import org.firehol.netdata.model.Chart;
+public class ParseException extends ConfigurationException {
+	private static final long serialVersionUID = 1383816306854639084L;
 
-public interface Collector {
+	public ParseException() {
+		super();
+	}
 
-	Collection<Chart> initialize() throws InitializationException;
+	public ParseException(String explanation) {
+		super(explanation);
+	}
 
-	Collection<Chart> collectValues();
+	public ParseException(Throwable cause) {
+		this.setRootCause(cause);
+	}
 
-	void cleanup();
+	public ParseException(String explanation, Throwable cause) {
+		super(explanation);
+		this.setRootCause(cause);
+	}
 
 }

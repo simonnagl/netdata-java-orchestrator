@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,7 +16,7 @@
  *
  */
 
-package org.firehol.netdata.plugin.configuration;
+package org.firehol.netdata.orchestrator.configuration;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 import org.firehol.netdata.Main;
-import org.firehol.netdata.plugin.configuration.exception.EnvironmentConfigurationException;
+import org.firehol.netdata.orchestrator.configuration.exception.EnvironmentConfigurationException;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import lombok.AccessLevel;

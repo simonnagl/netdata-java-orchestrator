@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -38,7 +38,7 @@ import org.firehol.netdata.module.jmx.configuration.JmxServerConfiguration;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.query.MBeanQuery;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
-import org.firehol.netdata.plugin.Collector;
+import org.firehol.netdata.orchestrator.Collector;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import lombok.Getter;

@@ -1,4 +1,4 @@
-# Java Plugin
+# Java Orchestrator
 
 ## Code Style
 

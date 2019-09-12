@@ -99,7 +99,7 @@ netdata_banner() {
             l3="  |   '-'   '-'   '-'   '-'   '-'   '-'   '-'   '-'   '-'   '-'   '-'   '-'  "  \
             l4="  +----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--->" \
             sp="                                                                              " \
-            netdata="netdata-plugin-java-daemon" start end msg="${*}" chartcolor="${TPUT_DIM}"
+            netdata="netdata-java-orchestrator" start end msg="${*}" chartcolor="${TPUT_DIM}"
 
     [ ${#msg} -lt ${#netdata} ] && msg="${msg}${sp:0:$(( ${#netdata} - ${#msg}))}"
     [ ${#msg} -gt $(( ${#l2} - 20 )) ] && msg="${msg:0:$(( ${#l2} - 23 ))}..."

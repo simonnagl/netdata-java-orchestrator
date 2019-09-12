@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Simon Nagl
  *
- * netadata-plugin-java-daemon is free software: you can redistribute it and/or modify
+ * netdata-java-orchestrator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -16,15 +16,15 @@
  *
  */
 
-package org.firehol.netdata.plugin.configuration;
+package org.firehol.netdata.orchestrator.configuration;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import org.firehol.netdata.Main;
-import org.firehol.netdata.plugin.configuration.exception.ConfigurationSchemeInstantiationException;
-import org.firehol.netdata.plugin.configuration.schema.PluginDaemonConfiguration;
+import org.firehol.netdata.orchestrator.configuration.exception.ConfigurationSchemeInstantiationException;
+import org.firehol.netdata.orchestrator.configuration.schema.OrchestratorConfiguration;
 import org.firehol.netdata.utils.LoggingUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 
 public final class ConfigurationService {
-	private final Logger log = Logger.getLogger("org.firehol.netdata.plugin.configuration");
+	private final Logger log = Logger.getLogger("org.firehol.netdata.orchestrator.configuration");
 
 	private final ObjectMapper mapper;
 
@@ -43,7 +43,7 @@ public final class ConfigurationService {
 			.getInstance();
 
 	@Getter
-	private PluginDaemonConfiguration globalConfiguration;
+	private OrchestratorConfiguration globalConfiguration;
 
 	private static final ConfigurationService INSTANCE = new ConfigurationService();
 
@@ -118,21 +118,21 @@ public final class ConfigurationService {
 		return configuration;
 	}
 
-	public PluginDaemonConfiguration readGlobalConfiguration() throws ConfigurationSchemeInstantiationException {
+	public OrchestratorConfiguration readGlobalConfiguration() throws ConfigurationSchemeInstantiationException {
 		final Path configDir = environmentConfigurationService.getConfigDir();
 		Path globalConfigPath = configDir.resolve("java.d.conf");
-		PluginDaemonConfiguration globalConfig;
+		OrchestratorConfiguration globalConfig;
 
-		globalConfig = readConfiguration(globalConfigPath.toFile(), PluginDaemonConfiguration.class);
+		globalConfig = readConfiguration(globalConfigPath.toFile(), OrchestratorConfiguration.class);
 		return globalConfig;
 	}
 
-	public <T> T readPluginConfiguration(String pluginName, Class<T> clazz)
+	public <T> T readModuleConfiguration(String moduleName, Class<T> clazz)
 			throws ConfigurationSchemeInstantiationException {
 		Path configDir = environmentConfigurationService.getConfigDir().resolve("java.d");
-		Path configFile = configDir.resolve(pluginName + ".conf");
+		Path configFile = configDir.resolve(moduleName + ".conf");
 
-		log.info(": Reading '" + pluginName + "' module configuration file '" + configFile.toFile().getAbsolutePath()
+		log.info(": Reading '" + moduleName + "' module configuration file '" + configFile.toFile().getAbsolutePath()
 				+ "'");
 		return this.readConfiguration(configFile.toFile(), clazz);
 	}
