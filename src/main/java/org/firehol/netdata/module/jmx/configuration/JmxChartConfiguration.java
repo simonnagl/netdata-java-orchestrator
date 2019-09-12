@@ -18,14 +18,15 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.firehol.netdata.model.ChartType;
 import org.firehol.netdata.model.DimensionAlgorithm;
 import org.firehol.netdata.module.jmx.JmxModule;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Configuration scheme of a chart created by the {@link JmxModule}.

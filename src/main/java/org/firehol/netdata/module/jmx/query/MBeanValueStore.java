@@ -1,10 +1,10 @@
 package org.firehol.netdata.module.jmx.query;
 
-import org.firehol.netdata.model.Dimension;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.firehol.netdata.model.Dimension;
 
 public abstract class MBeanValueStore {
 

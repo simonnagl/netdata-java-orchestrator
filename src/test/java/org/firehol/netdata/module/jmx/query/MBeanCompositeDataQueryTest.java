@@ -1,16 +1,17 @@
 package org.firehol.netdata.module.jmx.query;
 
-import org.firehol.netdata.model.Dimension;
-import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
-import org.junit.Test;
-
-import javax.management.*;
-import javax.management.openmbean.CompositeData;
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import javax.management.*;
+import javax.management.openmbean.CompositeData;
+
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.junit.Test;
 
 public class MBeanCompositeDataQueryTest {
 

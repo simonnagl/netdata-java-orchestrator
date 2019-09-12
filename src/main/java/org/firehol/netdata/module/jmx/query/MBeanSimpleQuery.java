@@ -18,14 +18,16 @@
 
 package org.firehol.netdata.module.jmx.query;
 
-import lombok.Getter;
+import java.util.List;
+
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+
 import org.firehol.netdata.model.Dimension;
 import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
 import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import java.util.List;
+import lombok.Getter;
 
 /**
  * A MBeanQuery is responsible to query a attribute of a MBean and place it's

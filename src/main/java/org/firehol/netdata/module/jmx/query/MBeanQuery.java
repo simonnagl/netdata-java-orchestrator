@@ -1,14 +1,16 @@
 package org.firehol.netdata.module.jmx.query;
 
-import lombok.Getter;
-import org.firehol.netdata.model.Dimension;
-import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
-import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
+import java.util.List;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
-import java.util.List;
+
+import org.firehol.netdata.model.Dimension;
+import org.firehol.netdata.module.jmx.exception.JmxMBeanServerQueryException;
+import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
+
+import lombok.Getter;
 
 /**
  * MBeanQuery is able to query one attribute of a MBeanServer and update the

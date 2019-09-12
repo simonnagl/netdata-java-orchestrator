@@ -1,12 +1,12 @@
 package org.firehol.netdata.module.jmx.query;
 
-import org.firehol.netdata.model.Dimension;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import org.firehol.netdata.model.Dimension;
+import org.junit.Test;
 
 public class MBeanValueStoreTest {
 

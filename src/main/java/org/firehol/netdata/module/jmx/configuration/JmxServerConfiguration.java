@@ -18,11 +18,12 @@
 
 package org.firehol.netdata.module.jmx.configuration;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * Configuration scheme to configure JMX agents to monitor.

@@ -18,7 +18,16 @@
 
 package org.firehol.netdata.module.jmx;
 
-import lombok.Getter;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
+
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+
 import org.firehol.netdata.exception.InitializationException;
 import org.firehol.netdata.exception.UnreachableCodeException;
 import org.firehol.netdata.model.Chart;
@@ -32,14 +41,7 @@ import org.firehol.netdata.module.jmx.utils.MBeanServerUtils;
 import org.firehol.netdata.plugin.Collector;
 import org.firehol.netdata.utils.LoggingUtils;
 
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import lombok.Getter;
 
 /**
  * Collects metrics of one MBeanServerConnection.
