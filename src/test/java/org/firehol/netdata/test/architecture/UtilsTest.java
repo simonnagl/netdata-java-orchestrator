@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package org.firehol.netdata.test.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
