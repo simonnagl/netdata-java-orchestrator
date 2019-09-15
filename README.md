@@ -1,9 +1,8 @@
 # Netdata Java Orchestrator
 
-[![Build Status](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon.svg?branch=master)](https://travis-ci.org/simonnagl/netdata-plugin-java-daemon)
+[![Build Status](https://travis-ci.org/simonnagl/netdata-java-orchestrator.svg?branch=master)](https://travis-ci.org/simonnagl/netdata-java-orchestrator.svg?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=Badge_Coverage)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c5196ea860ba4cb8a47f40c5264cc17f)](https://www.codacy.com/app/simonnagl/netdata-plugin-java-daemon?utm_source=github.com&utm_medium=referral&utm_content=simonnagl/netdata-plugin-java-daemon&utm_campaign=badger)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsimonnagl%2Fnetdata-java-orchestrator.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsimonnagl%2Fnetdata-java-orchestrator?ref=badge_shield)
 
 netdata-java-orchestrator is a [netdata](https://github.com/firehol/netdata) plugin which can collect any data in java and send it to netdata.
 
@@ -53,6 +52,3 @@ File                         | Schema | Purpose
 ## License
 
 netdata-java-orchestrator is [GPLv3+](LICENSE).
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsimonnagl%2Fnetdata-java-orchestrator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsimonnagl%2Fnetdata-java-orchestrator?ref=badge_large)
