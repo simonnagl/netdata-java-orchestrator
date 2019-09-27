@@ -217,12 +217,12 @@ EOF
 # -----------------------------------------------------------------------------
 progress "Cleanup compilation directory"
 
-[ -d target ] && run ./mvnw -o clean
+[ -d target ] && run ./mvnw clean
 
 # -----------------------------------------------------------------------------
 progress "Compile and package netdata-java-orchestrator"
 
-run ./mvnw -o -T 1C package || build_error
+run ./mvnw -T 1C package || build_error
 
 # -----------------------------------------------------------------------------
 progress "Install netdata-java-orchestrator"
